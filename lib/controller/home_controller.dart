@@ -6,6 +6,8 @@ import 'package:my_wallet/auth/login_face.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 
 class HomeController extends GetxController {
+  Map<String, dynamic> initateData = {};
+
 //variable for show text field
   var showTextField = false.obs;
 

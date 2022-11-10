@@ -26,7 +26,6 @@ Padding inputField({
           controller: controller,
           decoration: InputDecoration(
             suffixIcon: icon,
-            // prefixIcon: iconButton != null ? iconButton : null,
             label: Text(label),
             border: InputBorder.none,
           ),

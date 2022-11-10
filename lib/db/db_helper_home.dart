@@ -141,4 +141,9 @@ class HomeDBHelper {
         where: 'id=?', whereArgs: [expance.id]);
     return result;
   }
+
+  getSingleRecord(int id) async {
+    var _db = await database;
+    return _db!.rawQuery('SELECT * FROM $_tableName WHERE id = $id');
+  }
 }

@@ -1,10 +1,11 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
 import 'package:my_wallet/controller/home_controller.dart';
+import 'package:my_wallet/controller/update_expance_controller.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 import 'package:my_wallet/faces/all_expances_transcation_face.dart';
 import 'package:my_wallet/faces/expance_type_face.dart';
@@ -21,6 +22,7 @@ class HomeFace extends StatelessWidget {
     var height = size.height;
     var width = size.width;
     var controller = Get.find<HomeController>();
+    var updateController = Get.find<UpdateExpancesController>();
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
@@ -254,6 +256,33 @@ class HomeFace extends StatelessWidget {
                                                                   .expanceData[
                                                               index]
                                                           ['expance_type']);
+
+                                              updateController
+                                                      .initateData['id'] =
+                                                  controller.expanceData[index]
+                                                      ['id'];
+                                              updateController
+                                                      .initateData['title'] =
+                                                  controller.expanceData[index]
+                                                      ['title'];
+                                              updateController.initateData[
+                                                      'expance_type'] =
+                                                  controller.expanceData[index]
+                                                      ['expance_type'];
+                                              updateController
+                                                      .initateData['expance'] =
+                                                  controller.expanceData[index]
+                                                      ['expance'];
+                                              updateController
+                                                      .initateData['date'] =
+                                                  controller.expanceData[index]
+                                                      ['date'];
+                                              updateController
+                                                      .initateData['source'] =
+                                                  controller.expanceData[index]
+                                                      ['source'];
+                                              await updateController
+                                                  .initializeValue();
                                               await Get.to(
                                                   const UpdateExpancesFace(),
                                                   arguments: {
@@ -291,8 +320,17 @@ class HomeFace extends StatelessWidget {
                                             ),
                                           ),
                                           cancel: GestureDetector(
-                                            onTap: () {
-                                              print('Delete');
+                                            onTap: () async {
+                                              HomeDBHelper.instance
+                                                  .deleteRowOfTable(
+                                                      id: controller
+                                                              .expanceData[
+                                                          index]['id'])
+                                                  .then((val) => print(
+                                                      'Successfully Delete Data'))
+                                                  .catchError((e) => print(
+                                                      'Error in Delete data: $e'));
+                                              controller.clearReload();
                                               Get.back();
                                             },
                                             child: Container(

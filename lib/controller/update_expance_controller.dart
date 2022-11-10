@@ -10,6 +10,17 @@ import 'package:my_wallet/db/db_helper_home.dart';
 import 'package:my_wallet/model/expance_model.dart';
 
 class UpdateExpancesController extends GetxController {
+  Map<dynamic, dynamic> data = {};
+  Map<dynamic, dynamic> initateData = {};
+  initializeValue() {
+    print('ayub');
+    titleController.text = initateData['title'];
+    expanceTypeController.text = initateData['expance_type'].toString();
+    expanceController.text = initateData['expance'].toString();
+    dateController.text = initateData['date'];
+    sourceController.text = initateData['source'];
+  }
+
   // hive Box
   final _mybox = Hive.box('user');
 
@@ -155,63 +166,23 @@ class UpdateExpancesController extends GetxController {
     }
 
     key.currentState!.save();
-    print(1);
     loading.value = true;
     var modifyDate = dateController.text.substring(0, 2) +
         date.toString().substring(3, 5) +
         date.toString().substring(6);
     var integerDate = int.parse(modifyDate);
     filterDate.value = integerDate;
-    print(title);
-    print(expanceType);
-    print(expance);
-    print(date);
-    print(source);
-    print(filterDate.value);
-    titleController.text = '';
-    dateController.text = '';
-    expanceController.text = '';
-    expanceTypeController.text = '';
-    sourceController.text = '';
-    titleComplete.value = '';
-    expanceComplete.value = '';
-    expanceTypeComplete.value = '';
-    dateComplete.value = '';
-    sourceComplete.value = '';
-    // updateExpanceData();
+    updateExpanceData();
   }
 
   updateExpanceData() async {
-    // print(title);
-    // print(expanceType);
-    // print(expance);
-    // print(date);
-    // print(source);
-    // print(filterDate.value);
+    expance = int.parse(expance);
     await HomeDBHelper.instance
         .updateExpanceData(
-          Expance(
-            user_id: _mybox.get('id'),
-            title: title,
-            expance_type: expanceType,
-            expance: expance,
-            date: date,
-            source: source,
-            filter_date: filterDate.value,
-          ),
-        )
-        .then((value) => print('Successfully update'))
-        .catchError((e) => print('ERROR:$e'));
-  }
-
-  insertExpanceData() async {
-    expance = int.parse(expance);
-
-    HomeDBHelper.instance
-        .insertExpance(
       Expance(
-        title: title,
+        id: initateData['id'],
         user_id: _mybox.get('id'),
+        title: title,
         expance_type: expanceType,
         expance: expance,
         date: date,
@@ -220,7 +191,7 @@ class UpdateExpancesController extends GetxController {
       ),
     )
         .then((value) {
-      print('Successfully Add Expance Data');
+      print('Successfully update');
       loading.value = false;
       titleController.text = '';
       dateController.text = '';
@@ -235,7 +206,8 @@ class UpdateExpancesController extends GetxController {
       expanceData.clear();
       getExpanceData();
       home.clearReload();
-    }).catchError((e) => print('Error In insert Expance:$e'));
+      Get.back();
+    }).catchError((e) => print('ERROR:$e'));
   }
 
   // close function

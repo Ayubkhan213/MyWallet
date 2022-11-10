@@ -17,11 +17,7 @@ class UpdateExpancesFace extends StatelessWidget {
     var width = size.width;
     var controller = Get.find<UpdateExpancesController>();
     var data = Get.arguments;
-    controller.titleController.text = data['title'];
-    controller.expanceTypeController.text = data['expance_type_id'].toString();
-    controller.expanceController.text = data['expance'].toString();
-    controller.dateController.text = data['date'];
-    controller.sourceController.text = data['source'];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -131,11 +127,9 @@ class UpdateExpancesFace extends StatelessWidget {
                                           : const Icon(null),
                                 ),
                                 onSaved: (value) {
-                                  value ?? (value = data['expance_type_id']);
                                   controller.expanceType = value;
                                 },
                                 validator: (value) {
-                                  value ?? (value = data['expance_type_id']);
                                   return controller
                                       .expanceTypeValidation(value.toString());
                                 },
@@ -146,8 +140,7 @@ class UpdateExpancesFace extends StatelessWidget {
                                           controller.expanceTypeData[index])
                                 ].map<DropdownMenuItem<dynamic>>((value) {
                                   return DropdownMenuItem<dynamic>(
-                                    value:
-                                        value['id'] ?? data['expance_type_id'],
+                                    value: value['id'],
                                     child: Text(
                                       value['expance_type'],
                                       style: TextStyle(
