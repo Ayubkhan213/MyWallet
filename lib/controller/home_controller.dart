@@ -61,6 +61,18 @@ class HomeController extends GetxController {
   //List For ExpanceType value
   var expanceTypeValue = [].obs;
 
+  //List for CategoriesName
+  var categoriesList = [
+    'Food',
+    'Utiles',
+    'Rent',
+    'Transport',
+    'Health',
+    'Home',
+    'Frind',
+    'Other',
+  ];
+
   //logout function
   logout() {
     _myBox.deleteAll(['id', 'name', 'email', 'password']);
@@ -161,7 +173,7 @@ class HomeController extends GetxController {
               homeData[i]['date'].toString().substring(6)) {
             if (DateTime.now().month.toString() ==
                 homeData[i]['date'].toString().substring(3, 5)) {
-              frindExpance.value += homeData[i]['expance'] as int;
+              homeExpance.value += homeData[i]['expance'] as int;
             }
           }
         }
