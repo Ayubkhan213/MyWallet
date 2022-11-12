@@ -18,7 +18,6 @@ class HomeController extends GetxController {
   var formateDate = DateTime.now();
 
   //List for Month
-
   List<String> month = [
     'January',
     'February',
@@ -34,39 +33,30 @@ class HomeController extends GetxController {
     'December'
   ];
 
-  //List for table Column
-  List<String> tableColumn = [
-    'Title',
-    'Expance Type',
-    'Expance',
-    'Date',
-    'Source',
-  ];
-
   // Total Expance
   var totalExpance = 0.obs;
-
   // Food Expance
   var foodExpance = 0.obs;
   // electricty Expance
-  var electrictyExpance = 0.obs;
+  var utilesExpance = 0.obs;
   // rent Expance
   var rentExpance = 0.obs;
   // traveling Expance
-  var travelingExpance = 0.obs;
-  // jim Expance
-  var jimExpance = 0.obs;
+  var transportExpance = 0.obs;
+  // health Expance
+  var healthExpance = 0.obs;
+  // home Expance
+  var homeExpance = 0.obs;
   // frind Expance
   var frindExpance = 0.obs;
+  // other Expance
+  var otherExpance = 0.obs;
 
   //List for expanceData
   var expanceData = [].obs;
 
-  // ExpanceType Length
-  var expanceTypeLength = 0.obs;
-
-  //List For ExpanceType name
-  var expanceTypeName = [].obs;
+  //list for expanceType data
+  var expanceTypeData = [].obs;
 
   //List For ExpanceType value
   var expanceTypeValue = [].obs;
@@ -95,10 +85,8 @@ class HomeController extends GetxController {
 
   getAllCategoriesData() async {
     var expanceTypeData = await HomeDBHelper.instance.getExpancesTypeData();
-    expanceTypeLength.value == expanceTypeData.length;
     await HomeDBHelper.instance.getExpanceData(_myBox.get('id'));
     for (var i = 0; i < expanceTypeData.length; i++) {
-      expanceTypeName.add(expanceTypeData[i]['expance_type']);
       if (i == 0) {
         var foodData = await HomeDBHelper.instance.getExpanceCategoriesData(
             usersId: _myBox.get('id'), expanceTypeId: 1);
@@ -113,15 +101,14 @@ class HomeController extends GetxController {
         }
       }
       if (i == 1) {
-        var electrictyData = await HomeDBHelper.instance
-            .getExpanceCategoriesData(
-                usersId: _myBox.get('id'), expanceTypeId: 2);
-        for (var i = 0; i < electrictyData.length; i++) {
+        var utilesData = await HomeDBHelper.instance.getExpanceCategoriesData(
+            usersId: _myBox.get('id'), expanceTypeId: 2);
+        for (var i = 0; i < utilesData.length; i++) {
           if (DateTime.now().year.toString() ==
-              electrictyData[i]['date'].toString().substring(6)) {
+              utilesData[i]['date'].toString().substring(6)) {
             if (DateTime.now().month.toString() ==
-                electrictyData[i]['date'].toString().substring(3, 5)) {
-              electrictyExpance.value += electrictyData[i]['expance'] as int;
+                utilesData[i]['date'].toString().substring(3, 5)) {
+              utilesExpance.value += utilesData[i]['expance'] as int;
             }
           }
         }
@@ -148,27 +135,40 @@ class HomeController extends GetxController {
               travelingData[i]['date'].toString().substring(6)) {
             if (DateTime.now().month.toString() ==
                 travelingData[i]['date'].toString().substring(3, 5)) {
-              travelingExpance.value += travelingData[i]['expance'] as int;
+              transportExpance.value += travelingData[i]['expance'] as int;
             }
           }
         }
       }
       if (i == 4) {
-        var jimData = await HomeDBHelper.instance.getExpanceCategoriesData(
+        var healthData = await HomeDBHelper.instance.getExpanceCategoriesData(
             usersId: _myBox.get('id'), expanceTypeId: 5);
-        for (var i = 0; i < jimData.length; i++) {
+        for (var i = 0; i < healthData.length; i++) {
           if (DateTime.now().year.toString() ==
-              jimData[i]['date'].toString().substring(6)) {
+              healthData[i]['date'].toString().substring(6)) {
             if (DateTime.now().month.toString() ==
-                jimData[i]['date'].toString().substring(3, 5)) {
-              jimExpance.value += jimData[i]['expance'] as int;
+                healthData[i]['date'].toString().substring(3, 5)) {
+              healthExpance.value += healthData[i]['expance'] as int;
             }
           }
         }
       }
       if (i == 5) {
-        var frindData = await HomeDBHelper.instance.getExpanceCategoriesData(
+        var homeData = await HomeDBHelper.instance.getExpanceCategoriesData(
             usersId: _myBox.get('id'), expanceTypeId: 6);
+        for (var i = 0; i < homeData.length; i++) {
+          if (DateTime.now().year.toString() ==
+              homeData[i]['date'].toString().substring(6)) {
+            if (DateTime.now().month.toString() ==
+                homeData[i]['date'].toString().substring(3, 5)) {
+              frindExpance.value += homeData[i]['expance'] as int;
+            }
+          }
+        }
+      }
+      if (i == 6) {
+        var frindData = await HomeDBHelper.instance.getExpanceCategoriesData(
+            usersId: _myBox.get('id'), expanceTypeId: 7);
         for (var i = 0; i < frindData.length; i++) {
           if (DateTime.now().year.toString() ==
               frindData[i]['date'].toString().substring(6)) {
@@ -179,19 +179,35 @@ class HomeController extends GetxController {
           }
         }
       }
+      if (i == 7) {
+        var otherData = await HomeDBHelper.instance.getExpanceCategoriesData(
+            usersId: _myBox.get('id'), expanceTypeId: 8);
+        for (var i = 0; i < otherData.length; i++) {
+          if (DateTime.now().year.toString() ==
+              otherData[i]['date'].toString().substring(6)) {
+            if (DateTime.now().month.toString() ==
+                otherData[i]['date'].toString().substring(3, 5)) {
+              otherExpance.value += otherData[i]['expance'] as int;
+            }
+          }
+        }
+      }
+      expanceTypeValue.add(foodExpance);
+      expanceTypeValue.add(utilesExpance);
+      expanceTypeValue.add(rentExpance);
+      expanceTypeValue.add(transportExpance);
+      expanceTypeValue.add(healthExpance);
+      expanceTypeValue.add(homeExpance);
+      expanceTypeValue.add(frindExpance);
+      expanceTypeValue.add(otherExpance);
     }
-    expanceTypeValue.add(foodExpance);
-    expanceTypeValue.add(electrictyExpance);
-    expanceTypeValue.add(rentExpance);
-    expanceTypeValue.add(travelingExpance);
-    expanceTypeValue.add(jimExpance);
-    expanceTypeValue.add(frindExpance);
   }
 
-  // Function for get ExpanceTypeName
-  getExpanceTypeName({required int? id}) async {
-    var responce = await HomeDBHelper.instance.getExpanceTypeName(id: id);
-    return responce[0]['expance_type'];
+  getExpanceTypeData() async {
+    var responce = await HomeDBHelper.instance.getExpancesTypeData();
+    for (var i = 0; i < responce.length; i++) {
+      expanceTypeData.add(responce[i]);
+    }
   }
 
   // function for clear and re-load
@@ -200,12 +216,14 @@ class HomeController extends GetxController {
     expanceData.clear();
     getExpanceData();
     expanceTypeValue.clear();
-    expanceTypeName.clear();
     foodExpance.value = 0;
+    transportExpance.value = 0;
     rentExpance.value = 0;
-    electrictyExpance.value = 0;
+    utilesExpance.value = 0;
     frindExpance.value = 0;
-    jimExpance.value = 0;
+    healthExpance.value = 0;
+    otherExpance.value = 0;
+    homeExpance.value = 0;
     getAllCategoriesData();
   }
 
@@ -214,5 +232,6 @@ class HomeController extends GetxController {
     super.onInit();
     await getExpanceData();
     await getAllCategoriesData();
+    await getExpanceTypeData();
   }
 }

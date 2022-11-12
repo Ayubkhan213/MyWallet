@@ -13,7 +13,6 @@ class UpdateExpancesController extends GetxController {
   Map<dynamic, dynamic> data = {};
   Map<dynamic, dynamic> initateData = {};
   initializeValue() {
-    print('ayub');
     titleController.text = initateData['title'];
     expanceTypeController.text = initateData['expance_type'].toString();
     expanceController.text = initateData['expance'].toString();

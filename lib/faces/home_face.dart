@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
@@ -30,6 +31,8 @@ class HomeFace extends StatelessWidget {
           child: Obx(
             () => Column(
               children: [
+                //First row for logout and add expancetype with padding//
+
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -56,6 +59,8 @@ class HomeFace extends StatelessWidget {
                     ],
                   ),
                 ),
+                /* Second row with container for monthly expance and 
+              categories of that expance type */
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Container(
@@ -126,9 +131,9 @@ class HomeFace extends StatelessWidget {
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount:
-                                        controller.expanceTypeName.isEmpty
-                                            ? 2
-                                            : controller.expanceTypeName.length,
+                                        controller.expanceTypeData.isEmpty
+                                            ? 0
+                                            : controller.expanceTypeData.length,
                                     itemBuilder: (context, index) {
                                       return controller
                                                   .expanceTypeValue[index] ==
@@ -150,9 +155,9 @@ class HomeFace extends StatelessWidget {
                                                 child: Column(
                                                   children: [
                                                     Text(
-                                                      controller
-                                                              .expanceTypeName[
-                                                          index],
+                                                      controller.expanceTypeData[
+                                                              index]
+                                                          ['expance_type'],
                                                       style: const TextStyle(
                                                         color: Color.fromARGB(
                                                             255, 77, 148, 195),
@@ -180,6 +185,8 @@ class HomeFace extends StatelessWidget {
                     ),
                   ),
                 ),
+                /* third row for heaging expance record and show 
+               view all record on another page*/
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 17.0,
@@ -210,206 +217,121 @@ class HomeFace extends StatelessWidget {
                     ],
                   ),
                 ),
-                Obx(
-                  () => SizedBox(
-                    height: height / 1.9,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: DataTable(
-                              border: TableBorder.all(),
-                              columns: [
-                                ...List.generate(
-                                  controller.tableColumn.length,
-                                  (index) => DataColumn(
-                                    label: Text(
-                                      controller.tableColumn[index],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: [
-                                ...List.generate(
-                                  controller.expanceData.length > 10
-                                      ? 10
-                                      : controller.expanceData.length,
-                                  (index) => DataRow(
-                                      onLongPress: () async {
-                                        Get.defaultDialog(
-                                          title: 'Warning!',
-                                          middleText:
-                                              'Here you can update or Delete',
-                                          confirm: GestureDetector(
-                                            onTap: () async {
-                                              Get.back();
-                                              var expanceType = await controller
-                                                  .getExpanceTypeName(
-                                                      id: controller
-                                                                  .expanceData[
-                                                              index]
-                                                          ['expance_type']);
-
-                                              updateController
-                                                      .initateData['id'] =
+                /* 
+                List view bulider with multiple listtile for showing 
+                one expance type name title date and prize by one listtile
+                */
+                SizedBox(
+                  height: height * 0.5,
+                  child: ListView.builder(
+                      itemCount: controller.expanceData.length < 10
+                          ? controller.expanceData.length
+                          : 10,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0, vertical: 5.0),
+                          child: Slidable(
+                            startActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: ((context) async {
+                                    updateController.initateData['id'] =
+                                        controller.expanceData[index]['id'];
+                                    updateController.initateData['title'] =
+                                        controller.expanceData[index]['title'];
+                                    updateController
+                                            .initateData['expance_type'] =
+                                        controller.expanceData[index]
+                                            ['expance_type'];
+                                    updateController.initateData['expance'] =
+                                        controller.expanceData[index]
+                                            ['expance'];
+                                    updateController.initateData['date'] =
+                                        controller.expanceData[index]['date'];
+                                    updateController.initateData['source'] =
+                                        controller.expanceData[index]['source'];
+                                    await updateController.initializeValue();
+                                    await Get.to(const UpdateExpancesFace(),
+                                        arguments: {
+                                          'expance_type':
+                                              controller.expanceTypeData[
                                                   controller.expanceData[index]
-                                                      ['id'];
-                                              updateController
-                                                      .initateData['title'] =
-                                                  controller.expanceData[index]
-                                                      ['title'];
-                                              updateController.initateData[
-                                                      'expance_type'] =
-                                                  controller.expanceData[index]
-                                                      ['expance_type'];
-                                              updateController
-                                                      .initateData['expance'] =
-                                                  controller.expanceData[index]
-                                                      ['expance'];
-                                              updateController
-                                                      .initateData['date'] =
-                                                  controller.expanceData[index]
-                                                      ['date'];
-                                              updateController
-                                                      .initateData['source'] =
-                                                  controller.expanceData[index]
-                                                      ['source'];
-                                              await updateController
-                                                  .initializeValue();
-                                              await Get.to(
-                                                  const UpdateExpancesFace(),
-                                                  arguments: {
-                                                    'id': controller
-                                                            .expanceData[index]
-                                                        ['id'],
-                                                    'title': controller
-                                                            .expanceData[index]
-                                                        ['title'],
-                                                    'expance_type_id':
-                                                        controller.expanceData[
-                                                                index]
-                                                            ['expance_type'],
-                                                    'expance_type': expanceType,
-                                                    'expance': controller
-                                                            .expanceData[index]
-                                                        ['expance'],
-                                                    'date': controller
-                                                            .expanceData[index]
-                                                        ['date'],
-                                                    'source': controller
-                                                            .expanceData[index]
-                                                        ['source'],
-                                                  });
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  color: Colors.amber),
-                                              child: const Text('Update'),
-                                            ),
-                                          ),
-                                          cancel: GestureDetector(
-                                            onTap: () async {
-                                              HomeDBHelper.instance
-                                                  .deleteRowOfTable(
-                                                      id: controller
-                                                              .expanceData[
-                                                          index]['id'])
-                                                  .then((val) => print(
-                                                      'Successfully Delete Data'))
-                                                  .catchError((e) => print(
-                                                      'Error in Delete data: $e'));
-                                              controller.clearReload();
-                                              Get.back();
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  color: Colors.red),
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: const Text('Delete'),
-                                            ),
-                                          ),
-                                        );
-                                        // await HomeDBHelper.instance
-                                        //     .deleteRowOfTable(
-                                        //         id: controller
-                                        //             .expanceData[index]['id'])
-                                        //     .then((val) => print(
-                                        //         'successfully delete data'))
-                                        //     .catchError((e) => print(e));
-                                      },
-                                      cells: [
-                                        DataCell(
-                                          GestureDetector(
-                                            onTap: () {
-                                              print(controller
-                                                  .expanceData[index]);
-                                            },
-                                            child: Text(controller
-                                                .expanceData[index]['title']),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          FutureBuilder(
-                                              future:
-                                                  controller.getExpanceTypeName(
-                                                      id: controller
-                                                                  .expanceData[
-                                                              index]
-                                                          ['expance_type']),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  return Text(
-                                                      snapshot.data.toString());
-                                                }
-                                                return const Text(
-                                                    'Loading ...');
-                                              }),
-                                        ),
-                                        DataCell(
-                                          Text(controller.expanceData[index]
-                                                  ['expance']
-                                              .toString()),
-                                        ),
-                                        DataCell(
-                                          Text(controller.expanceData[index]
-                                                  ['date']
-                                              .toString()),
-                                        ),
-                                        DataCell(
-                                          Text(controller.expanceData[index]
-                                              ['source']),
-                                        ),
-                                      ]),
+                                                          ['expance_type'] -
+                                                      1]['expance_type'],
+                                        });
+                                  }),
+                                  backgroundColor: Colors.lightBlue,
+                                  icon: Icons.update_outlined,
+                                  foregroundColor: Colors.white,
+                                  borderRadius: BorderRadius.circular(15.0),
                                 ),
                               ],
                             ),
+                            endActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: ((context) async {
+                                    HomeDBHelper.instance
+                                        .deleteRowOfTable(
+                                            id: controller.expanceData[index]
+                                                ['id'])
+                                        .then((val) =>
+                                            print('Successfully Delete Data'))
+                                        .catchError((e) =>
+                                            print('Error in Delete data: $e'));
+                                    controller.clearReload();
+                                  }),
+                                  backgroundColor: Colors.red,
+                                  icon: Icons.delete,
+                                  foregroundColor: Colors.white,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                              ],
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  child: Image(
+                                      image: AssetImage(
+                                          'assets/images/${controller.expanceData[index]['expance_type']}.png')),
+                                ),
+                                title: Text(controller.expanceTypeData[
+                                        controller.expanceData[index]
+                                                ['expance_type'] -
+                                            1]['expance_type']
+                                    .toString()),
+                                subtitle: Text(
+                                    controller.expanceData[index]['title']),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                        'Rs ${controller.expanceData[index]['expance']}'),
+                                    const SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                        ' ${controller.expanceData[index]['date']}'),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
+                        );
+                      }),
                 ),
               ],
             ),
           ),
         ),
       ),
+      //Last floation action button for to add new expance //
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.to(const ExpancesFace());
@@ -419,71 +341,3 @@ class HomeFace extends StatelessWidget {
     );
   }
 }
-
-
-  //  Obx(
-  //               () => Padding(
-  //                 padding: const EdgeInsets.symmetric(
-  //                     horizontal: 20.0, vertical: 7.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     controller.showTextField.value
-  //                         ? Container(
-  //                             width: width - 80,
-  //                             decoration: BoxDecoration(
-  //                               color: Colors.grey.shade200,
-  //                               borderRadius: BorderRadius.circular(10.0),
-  //                             ),
-  //                             child: Padding(
-  //                               padding: const EdgeInsets.only(left: 20.0),
-  //                               child: TextFormField(
-  //                                 controller: controller.searchController,
-  //                                 onChanged: (val) {
-  //                                   controller.search.value = val;
-  //                                 },
-  //                                 decoration: const InputDecoration(
-  //                                   border: InputBorder.none,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           )
-  //                         : const SizedBox(),
-  //                     GestureDetector(
-  //                       onTap: () {
-  //                         controller.toggle();
-  //                       },
-  //                       child: controller.showTextField.value
-  //                           ? const Icon(
-  //                               Icons.search,
-  //                               size: 25.0,
-  //                               color: Color(0xFF2980b9),
-  //                             )
-  //                           : const Icon(
-  //                               Icons.search,
-  //                               size: 20.0,
-  //                               color: Color(0xFF2980b9),
-  //                             ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-              
- // color: const Color.fromARGB(
-                                                //     255, 77, 148, 195),
-                                                // boxShadow: const [
-                                                //   BoxShadow(
-                                                //     color: Color(0xFF2980b9),
-                                                //     offset: Offset(5, 5),
-                                                //     spreadRadius: 1,
-                                                //     blurRadius: 15.0,
-                                                //   ),
-                                                //   BoxShadow(
-                                                //     color: Color.fromARGB(
-                                                //         255, 101, 167, 211),
-                                                //     offset: Offset(-5, -5),
-                                                //     spreadRadius: 1,
-                                                //     blurRadius: 10.0,
-                                                //   ),
-                                                // ],

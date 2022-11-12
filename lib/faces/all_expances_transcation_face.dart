@@ -23,10 +23,10 @@ class AllExpanceTranscationFace extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Obx(
-              () => Padding(
+        child: Obx(
+          () => Column(
+            children: [
+              Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.0),
                 child: Row(
@@ -67,6 +67,8 @@ class AllExpanceTranscationFace extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+
+                                  //Container for showing filter
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
@@ -75,6 +77,8 @@ class AllExpanceTranscationFace extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(15.0),
                                       ),
+                                      //Select field for check weather it is filter
+                                      //by categories name or date
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10.0),
@@ -401,132 +405,176 @@ class AllExpanceTranscationFace extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20.0,
-                20.0,
-                0.0,
-                5.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Expance Record',
-                    style: TextStyle(
-                      color: Color(0xFF2980b9),
-                      fontSize: 28.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Obx(() => Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    25.0,
-                    0.0,
-                    30.0,
-                    0.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        controller.record.value,
-                        style: const TextStyle(
-                          color: Color(0xFF2980b9),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        controller.categoriesExpance.value.toString(),
-                        style: const TextStyle(
-                          color: Color(0xFF2980b9),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-            Obx(
-              () => Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          border: TableBorder.all(),
-                          columns: [
-                            ...List.generate(
-                              controller.tableColumn.length,
-                              (index) => DataColumn(
-                                label: Text(
-                                  controller.tableColumn[index],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                          rows: [
-                            ...List.generate(
-                              controller.expanceData.length,
-                              (index) => controller.expanceData.isEmpty
-                                  ? const DataRow(cells: [
-                                      DataCell(Text('Data Not Found')),
-                                    ])
-                                  : DataRow(cells: [
-                                      DataCell(
-                                        Text(controller.expanceData[index]
-                                            ['title']),
-                                      ),
-                                      DataCell(
-                                        FutureBuilder(
-                                            future:
-                                                controller.getExpanceTypeName(
-                                                    id: controller
-                                                            .expanceData[index]
-                                                        ['expance_type']),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return Text(
-                                                    snapshot.data.toString());
-                                              }
-                                              return const Text('Loading ...');
-                                            }),
-                                      ),
-                                      DataCell(
-                                        Text(controller.expanceData[index]
-                                                ['expance']
-                                            .toString()),
-                                      ),
-                                      DataCell(
-                                        Text(controller.expanceData[index]
-                                                ['date']
-                                            .toString()),
-                                      ),
-                                      DataCell(
-                                        Text(controller.expanceData[index]
-                                            ['source']),
-                                      ),
-                                    ]),
-                            ),
-                          ],
-                        ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  20.0,
+                  20.0,
+                  0.0,
+                  5.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text(
+                      'Expance Record',
+                      style: TextStyle(
+                        color: Color(0xFF2980b9),
+                        fontSize: 28.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  25.0,
+                  0.0,
+                  30.0,
+                  0.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      controller.record.value,
+                      style: const TextStyle(
+                        color: Color(0xFF2980b9),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      controller.categoriesExpance.value.toString(),
+                      style: const TextStyle(
+                        color: Color(0xFF2980b9),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                // height: height / 1.8,
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: controller.expanceData.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 5.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0)),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Image(
+                                  image: AssetImage(
+                                      'assets/images/${controller.expanceData[index]['expance_type']}.png')),
+                            ),
+                            title: Text(controller.expanceTypeData[controller
+                                        .expanceData[index]['expance_type'] -
+                                    1]['expance_type']
+                                .toString()),
+                            subtitle:
+                                Text(controller.expanceData[index]['title']),
+                            trailing: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    'Rs ${controller.expanceData[index]['expance']}'),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                Text(
+                                    ' ${controller.expanceData[index]['date']}'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+
+              // Obx(
+              //   () => Expanded(
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: SingleChildScrollView(
+              //         scrollDirection: Axis.vertical,
+              //         child: Padding(
+              //           padding: const EdgeInsets.all(8.0),
+              //           child: SingleChildScrollView(
+              //             scrollDirection: Axis.horizontal,
+              //             child: DataTable(
+              //               border: TableBorder.all(),
+              //               columns: [
+              //                 ...List.generate(
+              //                   controller.tableColumn.length,
+              //                   (index) => DataColumn(
+              //                     label: Text(
+              //                       controller.tableColumn[index],
+              //                       style: const TextStyle(
+              //                         fontWeight: FontWeight.bold,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //               rows: [
+              //                 ...List.generate(
+              //                   controller.expanceData.length,
+              //                   (index) => controller.expanceData.isEmpty
+              //                       ? const DataRow(cells: [
+              //                           DataCell(Text('Data Not Found')),
+              //                         ])
+              //                       : DataRow(cells: [
+              //                           DataCell(
+              //                             Text(controller.expanceData[index]
+              //                                 ['title']),
+              //                           ),
+              //                           DataCell(
+              //                             FutureBuilder(
+              //                                 future:
+              //                                     controller.getExpanceTypeName(
+              //                                         id: controller
+              //                                                 .expanceData[index]
+              //                                             ['expance_type']),
+              //                                 builder: (context, snapshot) {
+              //                                   if (snapshot.hasData) {
+              //                                     return Text(
+              //                                         snapshot.data.toString());
+              //                                   }
+              //                                   return const Text('Loading ...');
+              //                                 }),
+              //                           ),
+              //                           DataCell(
+              //                             Text(controller.expanceData[index]
+              //                                     ['expance']
+              //                                 .toString()),
+              //                           ),
+              //                           DataCell(
+              //                             Text(controller.expanceData[index]
+              //                                     ['date']
+              //                                 .toString()),
+              //                           ),
+              //                           DataCell(
+              //                             Text(controller.expanceData[index]
+              //                                 ['source']),
+              //                           ),
+              //                         ]),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );

@@ -45,7 +45,6 @@ class ExpancesController extends GetxController {
   getExpanceTypeData() async {
     List<Map<String, Object?>> data =
         await HomeDBHelper.instance.getExpancesTypeData();
-
     for (var i = 0; i < data.length; i++) {
       expanceTypeData.add(data[i]);
     }
