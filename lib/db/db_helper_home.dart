@@ -80,11 +80,11 @@ class HomeDBHelper {
     _db!.insert(_tableName, expance.toMap());
   }
 
-  Future<List<Map<String, Object?>>> getExpancesTypeData() async {
-    var _db = await database;
-    var result = _db!.query(_secondtableName);
-    return result;
-  }
+  // Future<List<Map<String, Object?>>> getExpancesTypeData() async {
+  //   var _db = await database;
+  //   var result = _db!.query(_secondtableName);
+  //   return result;
+  // }
 
   Future<List<Map<String, Object?>>> getExpanceData(int id) async {
     var _db = await database;

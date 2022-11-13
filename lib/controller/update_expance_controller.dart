@@ -38,11 +38,19 @@ class UpdateExpancesController extends GetxController {
   // login controller
   var logInController = Get.find<LoginController>();
 
-  // List for Expances_type tabledata
-  var expanceTypeData = [].obs;
-
   // List for Expances tabledata
   var expanceData = [].obs;
+  //List for CategoriesName and id
+  List<Map<String, dynamic>> expanceTypeData = [
+    {'id': 1, 'expance_type': 'Food'},
+    {'id': 2, 'expance_type': 'Utiles'},
+    {'id': 3, 'expance_type': 'Rent'},
+    {'id': 4, 'expance_type': 'Transport'},
+    {'id': 5, 'expance_type': 'Health'},
+    {'id': 6, 'expance_type': 'Home'},
+    {'id': 7, 'expance_type': 'Frind'},
+    {'id': 8, 'expance_type': 'Other'},
+  ];
 
   getExpanceData() async {
     List<Map<String, Object?>> data =
@@ -52,14 +60,14 @@ class UpdateExpancesController extends GetxController {
     }
   }
 
-  getExpanceTypeData() async {
-    List<Map<String, Object?>> data =
-        await HomeDBHelper.instance.getExpancesTypeData();
+  // getExpanceTypeData() async {
+  //   List<Map<String, Object?>> data =
+  //       await HomeDBHelper.instance.getExpancesTypeData();
 
-    for (var i = 0; i < data.length; i++) {
-      expanceTypeData.add(data[i]);
-    }
-  }
+  //   for (var i = 0; i < data.length; i++) {
+  //     expanceTypeData.add(data[i]);
+  //   }
+  // }
 
   // decloration controller
   late TextEditingController titleController,
@@ -83,7 +91,7 @@ class UpdateExpancesController extends GetxController {
     expanceController = TextEditingController();
     dateController = TextEditingController();
     sourceController = TextEditingController();
-    getExpanceTypeData();
+    // getExpanceTypeData();
     getExpanceData();
     super.onInit();
   }

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:my_wallet/controller/all_expance_transcation_controller.dart';
 import 'package:my_wallet/controller/expances_controller.dart';
-import 'package:my_wallet/controller/expances_type_controller.dart';
 import 'package:my_wallet/controller/home_controller.dart';
 import 'package:my_wallet/controller/login_controller.dart';
 import 'package:my_wallet/controller/signup_controller.dart';
@@ -16,7 +15,6 @@ class ALLBinding implements Bindings {
     Get.put<SignupController>(SignupController());
     Get.put<HomeController>(HomeController());
     Get.put<ExpancesController>(ExpancesController());
-    Get.put<ExpancesTypeController>(ExpancesTypeController());
     Get.put<AllExpanceTranscation>(AllExpanceTranscation());
     Get.put<UpdateExpancesController>(UpdateExpancesController());
   }

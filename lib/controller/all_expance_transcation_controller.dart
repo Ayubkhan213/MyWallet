@@ -21,7 +21,7 @@ class AllExpanceTranscation extends GetxController {
   var lastDate = 0.obs;
 
 //List for CategoriesName
-  var categoriesList = [
+  var expanceTypeData = [
     'Food',
     'Utiles',
     'Rent',
@@ -53,7 +53,7 @@ class AllExpanceTranscation extends GetxController {
   var expanceData = [].obs;
 
   //list for expanceType data
-  var expanceTypeData = [].obs;
+  // var expanceTypeData = [].obs;
 
   // open box
   final _myBox = Hive.box('user');
@@ -67,13 +67,6 @@ class AllExpanceTranscation extends GetxController {
     for (var i = 0; i < data.length; i++) {
       expanceData.add(data[i]);
       categoriesExpance.value += data[i]['expance'] as int;
-    }
-  }
-
-  getExpanceTypeData() async {
-    var responce = await HomeDBHelper.instance.getExpancesTypeData();
-    for (var i = 0; i < responce.length; i++) {
-      expanceTypeData.add(responce[i]);
     }
   }
 
@@ -97,6 +90,6 @@ class AllExpanceTranscation extends GetxController {
   void onInit() {
     super.onInit();
     getExpanceData();
-    getExpanceTypeData();
+    // getExpanceTypeData();
   }
 }

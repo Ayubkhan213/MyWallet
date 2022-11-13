@@ -1,15 +1,15 @@
-// ignore_for_file: unused_import, avoid_print
+// ignore_for_file: unused_import, avoid_print, unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
+import 'package:my_wallet/controller/all_expance_transcation_controller.dart';
 import 'package:my_wallet/controller/home_controller.dart';
 import 'package:my_wallet/controller/update_expance_controller.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 import 'package:my_wallet/faces/all_expances_transcation_face.dart';
-import 'package:my_wallet/faces/expance_type_face.dart';
 
 import 'package:my_wallet/faces/expances_face.dart';
 import 'package:my_wallet/faces/update_expance_face.dart';
@@ -24,6 +24,7 @@ class HomeFace extends StatelessWidget {
     var width = size.width;
     var controller = Get.find<HomeController>();
     var updateController = Get.find<UpdateExpancesController>();
+    var allExpanceTranscation = Get.find<AllExpanceTranscation>();
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
@@ -36,17 +37,8 @@ class HomeFace extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          Get.to(const ExpancesTypeFace());
-                        },
-                        icon: const Icon(
-                          Icons.settings,
-                          color: Color.fromARGB(255, 77, 148, 195),
-                        ),
-                      ),
                       IconButton(
                         onPressed: () {
                           controller.logout();
@@ -155,9 +147,9 @@ class HomeFace extends StatelessWidget {
                                                 child: Column(
                                                   children: [
                                                     Text(
-                                                      controller.expanceTypeData[
-                                                              index]
-                                                          ['expance_type'],
+                                                      controller
+                                                              .expanceTypeData[
+                                                          index],
                                                       style: const TextStyle(
                                                         color: Color.fromARGB(
                                                             255, 77, 148, 195),
@@ -185,7 +177,7 @@ class HomeFace extends StatelessWidget {
                     ),
                   ),
                 ),
-                /* third row for heaging expance record and show 
+                /* third row for heading expance record and show 
                view all record on another page*/
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -204,6 +196,10 @@ class HomeFace extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
+                          allExpanceTranscation.categoriesExpance.value = 0;
+                          allExpanceTranscation.record.value = 'All record';
+                          allExpanceTranscation.expanceData.clear();
+                          allExpanceTranscation.getExpanceData();
                           Get.to(const AllExpanceTranscationFace());
                         },
                         child: const Text(
@@ -228,102 +224,122 @@ class HomeFace extends StatelessWidget {
                           ? controller.expanceData.length
                           : 10,
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15.0, vertical: 5.0),
-                          child: Slidable(
-                            startActionPane: ActionPane(
-                              motion: const ScrollMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: ((context) async {
-                                    updateController.initateData['id'] =
-                                        controller.expanceData[index]['id'];
-                                    updateController.initateData['title'] =
-                                        controller.expanceData[index]['title'];
-                                    updateController
-                                            .initateData['expance_type'] =
-                                        controller.expanceData[index]
-                                            ['expance_type'];
-                                    updateController.initateData['expance'] =
-                                        controller.expanceData[index]
-                                            ['expance'];
-                                    updateController.initateData['date'] =
-                                        controller.expanceData[index]['date'];
-                                    updateController.initateData['source'] =
-                                        controller.expanceData[index]['source'];
-                                    await updateController.initializeValue();
-                                    await Get.to(const UpdateExpancesFace(),
-                                        arguments: {
-                                          'expance_type':
-                                              controller.expanceTypeData[
-                                                  controller.expanceData[index]
-                                                          ['expance_type'] -
-                                                      1]['expance_type'],
-                                        });
-                                  }),
-                                  backgroundColor: Colors.lightBlue,
-                                  icon: Icons.update_outlined,
-                                  foregroundColor: Colors.white,
-                                  borderRadius: BorderRadius.circular(15.0),
+                        return controller.expanceData.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'No Data Found',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 30.0),
                                 ),
-                              ],
-                            ),
-                            endActionPane: ActionPane(
-                              motion: const ScrollMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: ((context) async {
-                                    HomeDBHelper.instance
-                                        .deleteRowOfTable(
-                                            id: controller.expanceData[index]
-                                                ['id'])
-                                        .then((val) =>
-                                            print('Successfully Delete Data'))
-                                        .catchError((e) =>
-                                            print('Error in Delete data: $e'));
-                                    controller.clearReload();
-                                  }),
-                                  backgroundColor: Colors.red,
-                                  icon: Icons.delete,
-                                  foregroundColor: Colors.white,
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                              ],
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10.0)),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  child: Image(
-                                      image: AssetImage(
-                                          'assets/images/${controller.expanceData[index]['expance_type']}.png')),
-                                ),
-                                title: Text(controller.expanceTypeData[
-                                        controller.expanceData[index]
-                                                ['expance_type'] -
-                                            1]['expance_type']
-                                    .toString()),
-                                subtitle: Text(
-                                    controller.expanceData[index]['title']),
-                                trailing: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        'Rs ${controller.expanceData[index]['expance']}'),
-                                    const SizedBox(
-                                      height: 5.0,
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0, vertical: 5.0),
+                                child: Slidable(
+                                  startActionPane: ActionPane(
+                                    motion: const ScrollMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: ((context) async {
+                                          updateController.initateData['id'] =
+                                              controller.expanceData[index]
+                                                  ['id'];
+                                          updateController
+                                                  .initateData['title'] =
+                                              controller.expanceData[index]
+                                                  ['title'];
+                                          updateController
+                                                  .initateData['expance_type'] =
+                                              controller.expanceData[index]
+                                                  ['expance_type'];
+                                          updateController
+                                                  .initateData['expance'] =
+                                              controller.expanceData[index]
+                                                  ['expance'];
+                                          updateController.initateData['date'] =
+                                              controller.expanceData[index]
+                                                  ['date'];
+                                          updateController
+                                                  .initateData['source'] =
+                                              controller.expanceData[index]
+                                                  ['source'];
+                                          await updateController
+                                              .initializeValue();
+                                          await Get.to(
+                                              const UpdateExpancesFace(),
+                                              arguments: {
+                                                'expance_type': controller
+                                                    .expanceTypeData[controller
+                                                            .expanceData[index]
+                                                        ['expance_type'] -
+                                                    1],
+                                              });
+                                        }),
+                                        backgroundColor: Colors.lightBlue,
+                                        icon: Icons.update_outlined,
+                                        foregroundColor: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      ),
+                                    ],
+                                  ),
+                                  endActionPane: ActionPane(
+                                    motion: const ScrollMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: ((context) async {
+                                          HomeDBHelper.instance
+                                              .deleteRowOfTable(
+                                                  id: controller
+                                                      .expanceData[index]['id'])
+                                              .then((val) => print(
+                                                  'Successfully Delete Data'))
+                                              .catchError((e) => print(
+                                                  'Error in Delete data: $e'));
+                                          controller.clearReload();
+                                        }),
+                                        backgroundColor: Colors.red,
+                                        icon: Icons.delete,
+                                        foregroundColor: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        child: Image(
+                                            image: AssetImage(
+                                                'assets/images/${controller.expanceData[index]['expance_type']}.png')),
+                                      ),
+                                      title: Text(controller.expanceTypeData[
+                                          controller.expanceData[index]
+                                                  ['expance_type'] -
+                                              1]),
+                                      subtitle: Text(controller
+                                          .expanceData[index]['title']),
+                                      trailing: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                              'Rs ${controller.expanceData[index]['expance']}'),
+                                          const SizedBox(
+                                            height: 5.0,
+                                          ),
+                                          Text(
+                                              ' ${controller.expanceData[index]['date']}'),
+                                        ],
+                                      ),
                                     ),
-                                    Text(
-                                        ' ${controller.expanceData[index]['date']}'),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
+                              );
                       }),
                 ),
               ],

@@ -56,13 +56,13 @@ class HomeController extends GetxController {
   var expanceData = [].obs;
 
   //list for expanceType data
-  var expanceTypeData = [].obs;
+  // var expanceTypeData = [].obs;
 
   //List For ExpanceType value
   var expanceTypeValue = [].obs;
 
   //List for CategoriesName
-  var categoriesList = [
+  var expanceTypeData = [
     'Food',
     'Utiles',
     'Rent',
@@ -96,7 +96,7 @@ class HomeController extends GetxController {
   }
 
   getAllCategoriesData() async {
-    var expanceTypeData = await HomeDBHelper.instance.getExpancesTypeData();
+    // var expanceTypeData = await HomeDBHelper.instance.getExpancesTypeData();
     await HomeDBHelper.instance.getExpanceData(_myBox.get('id'));
     for (var i = 0; i < expanceTypeData.length; i++) {
       if (i == 0) {
@@ -215,12 +215,12 @@ class HomeController extends GetxController {
     }
   }
 
-  getExpanceTypeData() async {
-    var responce = await HomeDBHelper.instance.getExpancesTypeData();
-    for (var i = 0; i < responce.length; i++) {
-      expanceTypeData.add(responce[i]);
-    }
-  }
+  // getExpanceTypeData() async {
+  //   var responce = await HomeDBHelper.instance.getExpancesTypeData();
+  //   for (var i = 0; i < responce.length; i++) {
+  //     expanceTypeData.add(responce[i]);
+  //   }
+  // }
 
   // function for clear and re-load
   clearReload() {
@@ -244,6 +244,6 @@ class HomeController extends GetxController {
     super.onInit();
     await getExpanceData();
     await getAllCategoriesData();
-    await getExpanceTypeData();
+    // await getExpanceTypeData();
   }
 }
