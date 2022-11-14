@@ -146,4 +146,25 @@ class HomeDBHelper {
     var _db = await database;
     return _db!.rawQuery('SELECT * FROM $_tableName WHERE id = $id');
   }
+
+  Future<int> getCategoryDataOfCurrentMonth({
+    required int userId,
+    required int expenceTypeId,
+  }) async {
+    var _db = await database;
+    var result = await _db!.rawQuery(
+        'SELECT * FROM $_tableName WHERE $_userIdColumn = $userId AND $_expanceTypeColumn = $expenceTypeId');
+    var totalExpance = 0;
+    for (var i = 0; i < result.length; i++) {
+      if (DateTime.now().year.toString() ==
+          result[i]['date'].toString().substring(6)) {
+        if (DateTime.now().month.toString() ==
+            result[i]['date'].toString().substring(3, 5)) {
+          totalExpance += result[i]['expance'] as int;
+        }
+      }
+    }
+
+    return totalExpance;
+  }
 }

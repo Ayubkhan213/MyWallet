@@ -35,7 +35,7 @@ class HomeFace extends StatelessWidget {
                 //First row for logout and add expancetype with padding//
 
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -54,7 +54,10 @@ class HomeFace extends StatelessWidget {
                 /* Second row with container for monthly expance and 
               categories of that expance type */
                 Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                    vertical: 5.0,
+                  ),
                   child: Container(
                     height: height * 0.25,
                     width: width,
@@ -117,15 +120,15 @@ class HomeFace extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(left: 5.0),
                           child: SizedBox(
-                            height: 80.0,
+                            height: 95.0,
                             child: controller.expanceTypeValue.isEmpty
                                 ? const SizedBox()
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        controller.expanceTypeData.isEmpty
-                                            ? 0
-                                            : controller.expanceTypeData.length,
+                                    itemCount: controller
+                                            .expanceTypeValue.isEmpty
+                                        ? 0
+                                        : controller.expanceTypeValue.length,
                                     itemBuilder: (context, index) {
                                       return controller
                                                   .expanceTypeValue[index] ==
@@ -136,7 +139,9 @@ class HomeFace extends StatelessWidget {
                                                   const EdgeInsets.all(8.0),
                                               child: Container(
                                                 padding:
-                                                    const EdgeInsets.all(10.0),
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 7.0,
+                                                        horizontal: 12.0),
                                                 height: height * 0.01,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
@@ -146,25 +151,42 @@ class HomeFace extends StatelessWidget {
                                                 ),
                                                 child: Column(
                                                   children: [
-                                                    Text(
-                                                      controller
-                                                              .expanceTypeData[
-                                                          index],
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 77, 148, 195),
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: CircleAvatar(
+                                                        child: Image(
+                                                          image: AssetImage(
+                                                              'assets/images/$index.png'),
+                                                        ),
                                                       ),
                                                     ),
-                                                    Text(
-                                                      'Rs. ${controller.expanceTypeValue[index].toString()}',
-                                                      style: const TextStyle(
+                                                    Expanded(
+                                                      child: Text(
+                                                        controller
+                                                                .expanceTypeData[
+                                                            index - 1],
+                                                        style: const TextStyle(
                                                           color: Color.fromARGB(
                                                               255,
                                                               77,
                                                               148,
-                                                              195)),
+                                                              195),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        'Rs. ${controller.expanceTypeValue[index].toString()}',
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    77,
+                                                                    148,
+                                                                    195)),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -176,6 +198,9 @@ class HomeFace extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+                const SizedBox(
+                  height: 10.0,
                 ),
                 /* third row for heading expance record and show 
                view all record on another page*/
@@ -213,12 +238,15 @@ class HomeFace extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(
+                  height: 10.0,
+                ),
                 /* 
                 List view bulider with multiple listtile for showing 
                 one expance type name title date and prize by one listtile
                 */
                 SizedBox(
-                  height: height * 0.5,
+                  height: height * 0.55,
                   child: ListView.builder(
                       itemCount: controller.expanceData.length < 10
                           ? controller.expanceData.length
@@ -333,7 +361,7 @@ class HomeFace extends StatelessWidget {
                                             height: 5.0,
                                           ),
                                           Text(
-                                              ' ${controller.expanceData[index]['date']}'),
+                                              ' ${controller.expanceData[index]['date'].toString().substring(0, 2)} ${controller.month[int.parse(DateFormat('M').format(controller.formateDate)) - 1].toString().substring(0, 3)}, ${DateTime.now().year}'),
                                         ],
                                       ),
                                     ),
