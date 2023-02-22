@@ -3,60 +3,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'package:my_wallet/controller/home_controller.dart';
-import 'package:my_wallet/controller/login_controller.dart';
+import 'package:intl/intl.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 import 'package:my_wallet/model/expance_model.dart';
 
-class ExpancesController extends GetxController {
+class UpdateExpanceController extends GetxController {
+  var dataForUpdate = Get.arguments;
+
   // hive Box
   final _mybox = Hive.box('user');
-
-  // Time Formating
-  var formateDate = DateTime.now();
 
   // variable for date in integer form
   var filterDate = 0.obs;
 
   // Form Key
   final GlobalKey<FormState> key = GlobalKey<FormState>();
-
-  //home Controller
-  var home = Get.find<HomeController>();
-
-  // login controller
-  var logInController = Get.find<LoginController>();
-
-  //List for CategoriesName and id
-  List<Map<String, dynamic>> expanceTypeData = [
-    {'id': 1, 'expance_type': 'Food'},
-    {'id': 2, 'expance_type': 'Utiles'},
-    {'id': 3, 'expance_type': 'Rent'},
-    {'id': 4, 'expance_type': 'Transport'},
-    {'id': 5, 'expance_type': 'Health'},
-    {'id': 6, 'expance_type': 'Home'},
-    {'id': 7, 'expance_type': 'Frind'},
-    {'id': 8, 'expance_type': 'Other'},
-  ];
-  // List for Expances tabledata
-  var expanceData = [].obs;
-
-  getExpanceData() async {
-    List<Map<String, Object?>> data =
-        await HomeDBHelper.instance.getExpanceData(_mybox.get('id'));
-    for (var i = 0; i < data.length; i++) {
-      expanceData.add(data[i]);
-    }
-  }
-
-  // getExpanceTypeData() async {
-  //   List<Map<String, Object?>> data =
-  //       await HomeDBHelper.instance.getExpancesTypeData();
-  //   for (var i = 0; i < data.length; i++) {
-  //     expanceTypeData.add(data[i]);
-  //   }
-  // }
 
   // decloration controller
   late TextEditingController titleController,
@@ -68,7 +30,7 @@ class ExpancesController extends GetxController {
   // valiable for controller with no value
   var title = '';
   var expanceType = 0;
-  var expance;
+  var expance = 0;
   var date = '';
   var source = '';
 
@@ -80,8 +42,11 @@ class ExpancesController extends GetxController {
     expanceController = TextEditingController();
     dateController = TextEditingController();
     sourceController = TextEditingController();
-    // getExpanceTypeData();
-    getExpanceData();
+    titleController.text = dataForUpdate['title'];
+    expanceController.text = dataForUpdate['expance'].toString();
+    dateController.text = dataForUpdate['date'];
+    expanceType = dataForUpdate['expance_type_id'];
+    sourceController.text = dataForUpdate['source'];
     super.onInit();
   }
 
@@ -164,17 +129,21 @@ class ExpancesController extends GetxController {
     key.currentState!.save();
 
     loading.value = true;
-    insertExpanceData();
+    //here i convert the date to number
+    var date = DateFormat('dd-MM-yyyy').parse(dateController.text);
+    var modifyDate = DateFormat('ddMMyyyy').format(date);
+    var integerDate = int.parse(modifyDate);
+    filterDate.value = integerDate;
+    updateExpanceData();
   }
 
-  insertExpanceData() async {
-    expance = int.parse(expance);
-
-    HomeDBHelper.instance
-        .insertExpance(
-      Expance(
-        title: title,
+  updateExpanceData() async {
+    await DBHelper.instance
+        .updateExpanceData(
+      ExpanceModel(
+        id: dataForUpdate['id'],
         user_id: _mybox.get('id'),
+        title: title,
         expance_type: expanceType,
         expance: expance,
         date: date,
@@ -182,8 +151,8 @@ class ExpancesController extends GetxController {
         filter_date: filterDate.value,
       ),
     )
-        .then((value) {
-      print('Successfully Add Expance Data');
+        .then((value) async {
+      print('Successfully update');
       loading.value = false;
       titleController.text = '';
       dateController.text = '';
@@ -195,10 +164,12 @@ class ExpancesController extends GetxController {
       expanceTypeComplete.value = '';
       dateComplete.value = '';
       sourceComplete.value = '';
-      expanceData.clear();
-      getExpanceData();
-      home.clearReload();
-    }).catchError((e) => print('Error In insert Expance:$e'));
+      monthlyExpanceData.clear();
+      totalExpancesData.clear();
+      await DBHelper.instance.getTotalExpanceData(_mybox.get('id'));
+
+      Get.back();
+    }).catchError((e) => print('ERROR:$e'));
   }
 
   // close function

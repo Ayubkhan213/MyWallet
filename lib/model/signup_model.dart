@@ -1,20 +1,20 @@
-class SignUp {
+class SignupModel {
   int? id;
   String? name;
   String? email;
   String? password;
-  SignUp({
+  SignupModel({
     this.id,
     required this.name,
     required this.email,
     required this.password,
   });
-  factory SignUp.fromMap(Map<String, dynamic> row) {
-    return SignUp(
-        id: row['id'],
-        name: row['name'],
-        email: row['email'],
-        password: row['password']);
+  factory SignupModel.fromMap(Map<String, dynamic> parse) {
+    return SignupModel(
+        id: parse['id'],
+        name: parse['name'],
+        email: parse['email'],
+        password: parse['password']);
   }
 
   Map<String, Object?> toMap() {

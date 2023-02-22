@@ -3,62 +3,58 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
+import 'package:my_wallet/modules/update_expance/controller/update_expance_controller.dart';
 
-import 'package:my_wallet/controller/update_expance_controller.dart';
-
-class UpdateExpancesFace extends StatelessWidget {
-  const UpdateExpancesFace({super.key});
+class UpdateExpancePage extends GetView<UpdateExpanceController> {
+  const UpdateExpancePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    //MediaQuery
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
-    var controller = Get.find<UpdateExpancesController>();
-    var data = Get.arguments;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      //Appbar
+      appBar: AppBar(),
       body: SafeArea(
         child: ListView(
           children: [
+            //SizedBoxed
             SizedBox(
-              height: height / 20,
+              height: height * 0.05,
             ),
             Column(
               children: [
-                Row(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 18.0),
-                      child: Text(
-                        'Update Expances',
-                        style: TextStyle(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2980b9),
-                        ),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: text(
+                      txt: 'Update Expances',
+                      size: 35.0,
+                      weight: FontWeight.bold,
+                      color: const Color(0xFF2980b9),
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 50.0,
+
+                //SizedBoxed
+                SizedBox(
+                  height: height * 0.06,
                 ),
 
                 //========= FORM ============//
                 Form(
                   key: controller.key,
-                  child: Column(
-                    children: [
-                      //========= Title Field ==========//
-                      Obx(
-                        () => inputField(
+                  child: Obx(
+                    () => Column(
+                      children: [
+                        //========= Title Field ==========//
+                        inputField(
                           isPassword: false,
                           icon: controller.titleComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
@@ -73,7 +69,7 @@ class UpdateExpancesFace extends StatelessWidget {
                                         color: Colors.red.shade800,
                                       ))
                                   : const Icon(null),
-                          label: 'title',
+                          label: 'Title',
                           controller: controller.titleController,
                           keybordType: TextInputType.text,
                           save: (value) {
@@ -83,12 +79,10 @@ class UpdateExpancesFace extends StatelessWidget {
                             return controller.titleValidation(value);
                           },
                         ),
-                      ),
 
-                      //============= END ============//
-                      //========= ExpanceType Field ==========//
-                      Obx(
-                        () => Padding(
+                        //============= END ============//
+                        //========= ExpanceType Field ==========//
+                        Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 15.0, vertical: 5.0),
                           child: Container(
@@ -104,7 +98,8 @@ class UpdateExpancesFace extends StatelessWidget {
                               ),
                               child: DropdownButtonFormField(
                                 decoration: InputDecoration(
-                                  hintText: data['expance_type'],
+                                  hintText:
+                                      controller.dataForUpdate['expance_type'],
                                   border: InputBorder.none,
                                   suffix: controller
                                               .expanceTypeComplete.value ==
@@ -127,25 +122,28 @@ class UpdateExpancesFace extends StatelessWidget {
                                           : const Icon(null),
                                 ),
                                 onSaved: (value) {
+                                  value ?? (value = controller.expanceType);
+
                                   controller.expanceType = value;
                                 },
                                 validator: (value) {
+                                  value ??
+                                      (value = controller
+                                          .dataForUpdate['expance_type_id']
+                                          .toString());
+
                                   return controller
                                       .expanceTypeValidation(value.toString());
                                 },
                                 items: <dynamic>[
-                                  ...List.generate(
-                                      controller.expanceTypeData.length,
-                                      (index) =>
-                                          controller.expanceTypeData[index])
+                                  ...List.generate(expanceTypeData.length,
+                                      (index) => expanceTypeData[index])
                                 ].map<DropdownMenuItem<dynamic>>((value) {
                                   return DropdownMenuItem<dynamic>(
-                                    value: value['id'],
-                                    child: Text(
-                                      value['expance_type'],
-                                      style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                      ),
+                                    value: value.id,
+                                    child: text(
+                                      txt: value.expance_type,
+                                      color: Colors.grey.shade600,
                                     ),
                                   );
                                 }).toList(),
@@ -156,12 +154,10 @@ class UpdateExpancesFace extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
 
-                      //============= END ============//
-                      //========= Expance Field ==========//
-                      Obx(
-                        () => inputField(
+                        //============= END ============//
+                        //========= Expance Field ==========//
+                        inputField(
                           icon: controller.expanceComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
                               : controller.expanceComplete.value == 'false'
@@ -175,23 +171,40 @@ class UpdateExpancesFace extends StatelessWidget {
                                         color: Colors.red.shade800,
                                       ))
                                   : const Icon(null),
-                          label: 'expance',
+                          label: 'Expance',
                           controller: controller.expanceController,
                           keybordType: TextInputType.number,
                           save: (value) {
-                            controller.expance = value;
+                            var expance = int.parse(value);
+                            controller.expance = expance;
                           },
                           validate: (value) {
                             return controller.expanceValidation(value);
                           },
                           isPassword: false,
                         ),
-                      ),
 
-                      //============= END ============//
-                      //========= Date Field ==========//
-                      Obx(
-                        () => inputField(
+                        //============= END ============//
+                        //========= Date Field ==========//
+                        inputField(
+                          tab: () {
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(1980),
+                                    lastDate: DateTime(2030))
+                                .then((value) {
+                              var date =
+                                  DateFormat('dd-MM-yyyy').format(value!);
+                              controller.dateController.text = date;
+                              var modifyDate =
+                                  DateFormat('ddMMyyyy').format(value);
+                              print(modifyDate);
+                              var integerDate = int.parse(modifyDate);
+                              controller.filterDate.value = integerDate;
+                            }).catchError(
+                                    (e) => print('Error in date picker:$e'));
+                          },
                           isPassword: false,
                           icon: controller.dateComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
@@ -206,32 +219,11 @@ class UpdateExpancesFace extends StatelessWidget {
                                         color: Colors.red.shade800,
                                       ))
                                   : IconButton(
-                                      onPressed: () {
-                                        showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(1980),
-                                                lastDate: DateTime(2030))
-                                            .then((value) {
-                                          var date = DateFormat('dd-MM-yyyy')
-                                              .format(value!);
-                                          controller.dateController.text = date;
-                                          var modifyDate = date
-                                                  .toString()
-                                                  .substring(0, 2) +
-                                              date.toString().substring(3, 5) +
-                                              date.toString().substring(6);
-                                          var integerDate =
-                                              int.parse(modifyDate);
-                                          controller.filterDate.value =
-                                              integerDate;
-                                        }).catchError((e) => print(
-                                                'Error in date picker:$e'));
-                                      },
+                                      onPressed: () {},
                                       icon: const Icon(Icons.calendar_month),
                                       color: Colors.grey.shade600,
                                     ),
-                          label: 'date',
+                          label: 'Date',
                           controller: controller.dateController,
                           keybordType: TextInputType.text,
                           save: (value) {
@@ -241,12 +233,10 @@ class UpdateExpancesFace extends StatelessWidget {
                             return controller.dateValidation(value);
                           },
                         ),
-                      ),
 
-                      //============= END ============//
-                      //========= Source Field ==========//
-                      Obx(
-                        () => inputField(
+                        //============= END ============//
+                        //========= Source Field ==========//
+                        inputField(
                           isPassword: false,
                           icon: controller.sourceComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
@@ -261,7 +251,7 @@ class UpdateExpancesFace extends StatelessWidget {
                                         color: Colors.red.shade800,
                                       ))
                                   : const Icon(null),
-                          label: 'source',
+                          label: 'Source',
                           controller: controller.sourceController,
                           keybordType: TextInputType.text,
                           save: (value) {
@@ -271,15 +261,13 @@ class UpdateExpancesFace extends StatelessWidget {
                             return controller.sourceValidation(value);
                           },
                         ),
-                      ),
 
-                      //============= END ============//
+                        //============= END ============//
 
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      Obx(
-                        () => GestureDetector(
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+                        GestureDetector(
                           onTap: () async {
                             controller.checkValidation();
                           },
@@ -295,18 +283,16 @@ class UpdateExpancesFace extends StatelessWidget {
                               child: controller.loading.value
                                   ? const Center(
                                       child: CircularProgressIndicator())
-                                  : const Text(
-                                      'Update Expances',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                  : text(
+                                      txt: 'Update Expances',
+                                      color: Colors.white,
+                                      align: TextAlign.center,
                                     ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

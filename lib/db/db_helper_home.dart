@@ -1,20 +1,21 @@
 // ignore_for_file: unused_field, prefer_const_declarations, invalid_return_type_for_catch_error, body_might_complete_normally_nullable, depend_on_referenced_packages, no_leading_underscores_for_local_identifiers, avoid_print
 
 import 'dart:io';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/model/expance_model.dart';
-import 'package:my_wallet/model/expance_type_model.dart';
+
 import 'package:my_wallet/model/signup_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class HomeDBHelper {
+class DBHelper {
   static final _dbName = 'wallet.db';
   static final _nameColumn = 'name';
   static final _emailColumn = 'email';
   static final _authtableName = 'auth_table';
   static final _passwordColumn = 'password';
-  static final _tableName = 'expance_table';
+  static final _expanceTable = 'expance_table';
   static final _secondtableName = 'expance_type_table';
   static final _version = 1;
   static final _idColumn = 'id';
@@ -26,8 +27,8 @@ class HomeDBHelper {
   static final _sourceColumn = 'source';
   static final _filterDate = 'filter_date';
 
-  HomeDBHelper._privatConstructor();
-  static final instance = HomeDBHelper._privatConstructor();
+  DBHelper._privatConstructor();
+  static final instance = DBHelper._privatConstructor();
 
   static Database? _database;
   Future<Database?> get database async {
@@ -54,111 +55,104 @@ class HomeDBHelper {
     await _db.execute(
         'CREATE TABLE $_secondtableName($_idColumn INTEGER PRIMARY KEY,$_expanceTypeColumn VARCHAR)');
     await _db.execute(
-        'CREATE TABLE $_tableName($_idColumn INTEGER PRIMARY KEY,$_userIdColumn INTEGER,$_titleColumn VARCHAR,$_expanceTypeColumn int,$_expanceColumn INTEGER,$_dateColumn TEXT,$_sourceColumn TEXT,$_filterDate INTEGER)');
+        'CREATE TABLE $_expanceTable($_idColumn INTEGER PRIMARY KEY,$_userIdColumn INTEGER,$_titleColumn VARCHAR,$_expanceTypeColumn int,$_expanceColumn INTEGER,$_dateColumn TEXT,$_sourceColumn TEXT,$_filterDate INTEGER)');
   }
 
-  Future<SignUp?> insertData(SignUp signUp) async {
+//Signup New Person
+  Future<SignupModel?> signupNewPerson(SignupModel signUp) async {
     var _db = await database;
     _db!.insert(_authtableName, signUp.toMap());
     return signUp;
   }
 
-  Future<List<Map<String, Object?>>> getData() async {
+//GetSignup Data
+  Future<void> getSignupData() async {
     var _db = await database;
-    var _result = _db!.query(_authtableName);
-    return _result;
+    var result = await _db!.rawQuery('SELECT * FROM $_authtableName');
+    var data = result.map((e) => SignupModel.fromMap(e)).toList();
+    signupData.value = data;
   }
 
-  Future<ExpanceType?> insertExpanceType(ExpanceType expanceType) async {
+//Insert Expance
+  Future<ExpanceModel?> insertExpance(ExpanceModel expanceModel) async {
     var _db = await database;
-    _db!.insert(_secondtableName, expanceType.toMap());
-    return expanceType;
+    _db!.insert(_expanceTable, expanceModel.toMap());
   }
 
-  Future<Expance?> insertExpance(Expance expance) async {
+//Get Total expance data
+  Future<void> getTotalExpanceData(int id) async {
     var _db = await database;
-    _db!.insert(_tableName, expance.toMap());
+    var result =
+        await _db!.query(_expanceTable, where: 'user_id=?', whereArgs: [id]);
+    var data = result.map((e) => ExpanceModel.fromMap(e)).toList();
+    totalExpancesData.value = data;
+    monthlyExpanceData.clear();
+    for (var i = 0; i < totalExpancesData.length; i++) {
+      if (DateTime.now().year.toString() ==
+          totalExpancesData[i].date.toString().substring(6)) {
+        if (DateTime.now().toString().substring(5, 7) ==
+            totalExpancesData[i].date.toString().substring(3, 5)) {
+          monthlyExpanceData.add(totalExpancesData[i]);
+        }
+      }
+    }
   }
 
-  // Future<List<Map<String, Object?>>> getExpancesTypeData() async {
-  //   var _db = await database;
-  //   var result = _db!.query(_secondtableName);
-  //   return result;
-  // }
-
-  Future<List<Map<String, Object?>>> getExpanceData(int id) async {
-    var _db = await database;
-    var result = _db!.query(_tableName, where: 'user_id=?', whereArgs: [id]);
-    return result;
-  }
-
-  Future<List<Map<String, dynamic>>> getUserId(String userEmail) async {
+//Single User data
+  Future<List<Map<String, dynamic>>> getUserData(String userEmail) async {
     var _db = await database;
     var data = _db!.query(_authtableName,
         where: '$_emailColumn = ?', whereArgs: [userEmail]);
     return data;
   }
 
-  Future<List<Map<String, dynamic>>> getExpanceCategoriesData(
-      {required int? usersId, required int? expanceTypeId}) async {
+//function for selected category data
+  Future<void> getSelectedCategoriesTotalExpance(
+      {required int? expanceTypeId, required int? userId}) async {
     var _db = await database;
-    var data = _db!.rawQuery(
-        'SELECT * FROM $_tableName WHERE user_id= $usersId AND expance_type = $expanceTypeId');
-    return data;
+    var result = await _db!.rawQuery(
+        'SELECT * FROM $_expanceTable WHERE user_id =$userId AND expance_type = $expanceTypeId');
+    var data = result.map((e) => ExpanceModel.fromMap(e)).toList();
+    totalExpancesData.value = data;
   }
 
-  Future<List<Map<String, dynamic>>> getExpanceTypeName(
-      {required int? id}) async {
-    var _db = await database;
-    var data = _db!.query(_secondtableName, where: 'id=?', whereArgs: [id]);
-    return data;
-  }
-
-  Future<List<Map<String, dynamic>>> getSelectedCategoriesData(
-      {required int? id, required int? userId}) async {
-    var _db = await database;
-    var data = _db!.rawQuery(
-        'SELECT * FROM $_tableName WHERE user_id =$userId AND expance_type = $id');
-    return data;
-  }
-
-  Future<List<Map<String, dynamic>>> getselectDateDate(
+//function for fetching selected date data
+  Future<void> getselectDateDate(
       {required int startDate, required int endDate}) async {
     var _db = await database;
-    var result = _db!.rawQuery(
-        'SELECT * FROM $_tableName WHERE $_filterDate >= $startDate AND $_filterDate<=$endDate');
-    return result;
+    var result = await _db!.rawQuery(
+        'SELECT * FROM $_expanceTable WHERE $_filterDate >= $startDate AND $_filterDate<=$endDate');
+    var data = result.map((e) => ExpanceModel.fromMap(e)).toList();
+    totalExpancesData.value = data;
   }
 
+//function for deleting data
   deleteRowOfTable({required int id}) async {
     var _db = await database;
-    _db!.delete(_tableName, where: 'id=?', whereArgs: [id]);
+    _db!.delete(_expanceTable, where: 'id=?', whereArgs: [id]);
   }
 
-  updateExpanceData(Expance expance) async {
+//function for update data
+  updateExpanceData(ExpanceModel expanceModel) async {
     var _db = await database;
-    var result = _db!.update(_tableName, expance.toMap(),
-        where: 'id=?', whereArgs: [expance.id]);
+    var result = _db!.update(_expanceTable, expanceModel.toMap(),
+        where: 'id=?', whereArgs: [expanceModel.id]);
     return result;
   }
 
-  getSingleRecord(int id) async {
-    var _db = await database;
-    return _db!.rawQuery('SELECT * FROM $_tableName WHERE id = $id');
-  }
-
+//Get Category Expance Of Current Month
   Future<int> getCategoryDataOfCurrentMonth({
     required int userId,
     required int expenceTypeId,
   }) async {
     var _db = await database;
     var result = await _db!.rawQuery(
-        'SELECT * FROM $_tableName WHERE $_userIdColumn = $userId AND $_expanceTypeColumn = $expenceTypeId');
+        'SELECT * FROM $_expanceTable WHERE $_userIdColumn = $userId AND $_expanceTypeColumn = $expenceTypeId');
     var totalExpance = 0;
     for (var i = 0; i < result.length; i++) {
       if (DateTime.now().year.toString() ==
           result[i]['date'].toString().substring(6)) {
-        if (DateTime.now().month.toString() ==
+        if (DateTime.now().toString().substring(5, 7) ==
             result[i]['date'].toString().substring(3, 5)) {
           totalExpance += result[i]['expance'] as int;
         }

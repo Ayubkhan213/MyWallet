@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-class Expance {
+class ExpanceModel {
   int? id;
   int? user_id;
   String? title;
@@ -9,7 +9,7 @@ class Expance {
   String date;
   String? source;
   int? filter_date;
-  Expance({
+  ExpanceModel({
     this.id,
     required this.user_id,
     required this.title,
@@ -19,13 +19,13 @@ class Expance {
     required this.source,
     required this.filter_date,
   });
-  factory Expance.fromMap(Map<String, dynamic> row) {
-    return Expance(
+  factory ExpanceModel.fromMap(Map<String, dynamic> row) {
+    return ExpanceModel(
       id: row['id'],
       user_id: row['user_id'],
       title: row['title'],
       expance_type: row['expance_type'],
-      expance: row['id'],
+      expance: row['expance'],
       date: row['date'],
       source: row['source'],
       filter_date: row['filter_date'],

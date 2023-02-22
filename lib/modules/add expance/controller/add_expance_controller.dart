@@ -4,22 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:my_wallet/controller/home_controller.dart';
-import 'package:my_wallet/controller/login_controller.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 import 'package:my_wallet/model/expance_model.dart';
 
-class UpdateExpancesController extends GetxController {
-  Map<dynamic, dynamic> data = {};
-  Map<dynamic, dynamic> initateData = {};
-  initializeValue() {
-    titleController.text = initateData['title'];
-    expanceTypeController.text = initateData['expance_type'].toString();
-    expanceController.text = initateData['expance'].toString();
-    dateController.text = initateData['date'];
-    sourceController.text = initateData['source'];
-  }
-
+class AddExpanceController extends GetxController {
   // hive Box
   final _mybox = Hive.box('user');
 
@@ -32,42 +20,8 @@ class UpdateExpancesController extends GetxController {
   // Form Key
   final GlobalKey<FormState> key = GlobalKey<FormState>();
 
-  //home Controller
-  var home = Get.find<HomeController>();
-
-  // login controller
-  var logInController = Get.find<LoginController>();
-
   // List for Expances tabledata
   var expanceData = [].obs;
-  //List for CategoriesName and id
-  List<Map<String, dynamic>> expanceTypeData = [
-    {'id': 1, 'expance_type': 'Food'},
-    {'id': 2, 'expance_type': 'Utiles'},
-    {'id': 3, 'expance_type': 'Rent'},
-    {'id': 4, 'expance_type': 'Transport'},
-    {'id': 5, 'expance_type': 'Health'},
-    {'id': 6, 'expance_type': 'Home'},
-    {'id': 7, 'expance_type': 'Frind'},
-    {'id': 8, 'expance_type': 'Other'},
-  ];
-
-  getExpanceData() async {
-    List<Map<String, Object?>> data =
-        await HomeDBHelper.instance.getExpanceData(_mybox.get('id'));
-    for (var i = 0; i < data.length; i++) {
-      expanceData.add(data[i]);
-    }
-  }
-
-  // getExpanceTypeData() async {
-  //   List<Map<String, Object?>> data =
-  //       await HomeDBHelper.instance.getExpancesTypeData();
-
-  //   for (var i = 0; i < data.length; i++) {
-  //     expanceTypeData.add(data[i]);
-  //   }
-  // }
 
   // decloration controller
   late TextEditingController titleController,
@@ -79,20 +33,20 @@ class UpdateExpancesController extends GetxController {
   // valiable for controller with no value
   var title = '';
   var expanceType = 0;
-  var expance;
+  var expance = 0;
   var date = '';
   var source = '';
 
   //init function with decleration controller
   @override
-  void onInit() {
+  void onInit() async {
     titleController = TextEditingController();
     expanceTypeController = TextEditingController();
     expanceController = TextEditingController();
     dateController = TextEditingController();
     sourceController = TextEditingController();
     // getExpanceTypeData();
-    getExpanceData();
+
     super.onInit();
   }
 
@@ -171,25 +125,17 @@ class UpdateExpancesController extends GetxController {
     if (!isValid) {
       return;
     }
-
     key.currentState!.save();
     loading.value = true;
-    var modifyDate = dateController.text.substring(0, 2) +
-        date.toString().substring(3, 5) +
-        date.toString().substring(6);
-    var integerDate = int.parse(modifyDate);
-    filterDate.value = integerDate;
-    updateExpanceData();
+    insertExpanceData();
   }
 
-  updateExpanceData() async {
-    expance = int.parse(expance);
-    await HomeDBHelper.instance
-        .updateExpanceData(
-      Expance(
-        id: initateData['id'],
-        user_id: _mybox.get('id'),
+  insertExpanceData() async {
+    DBHelper.instance
+        .insertExpance(
+      ExpanceModel(
         title: title,
+        user_id: _mybox.get('id'),
         expance_type: expanceType,
         expance: expance,
         date: date,
@@ -197,8 +143,9 @@ class UpdateExpancesController extends GetxController {
         filter_date: filterDate.value,
       ),
     )
-        .then((value) {
-      print('Successfully update');
+        .then((value) async {
+      Get.snackbar('Success', 'Successfully Added Expances',
+          backgroundColor: const Color(0xFF2ed573));
       loading.value = false;
       titleController.text = '';
       dateController.text = '';
@@ -211,10 +158,15 @@ class UpdateExpancesController extends GetxController {
       dateComplete.value = '';
       sourceComplete.value = '';
       expanceData.clear();
-      getExpanceData();
-      home.clearReload();
-      Get.back();
-    }).catchError((e) => print('ERROR:$e'));
+      await DBHelper.instance.getTotalExpanceData(_mybox.get('id'));
+      // home.clearReload();
+    }).catchError(
+      (e) => Get.snackbar(
+        'Error',
+        '$e',
+        backgroundColor: const Color(0xFFff4757),
+      ),
+    );
   }
 
   // close function

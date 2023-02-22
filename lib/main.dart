@@ -2,32 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_wallet/binding/all_binding.dart';
-import 'package:my_wallet/faces/splash_face.dart';
+import 'package:my_wallet/routes/app_pages.dart';
 
 void main() async {
-  await GetStorage.init();
   await Hive.initFlutter();
   //open the box
-  var box = await Hive.openBox('user');
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialBinding: ALLBinding(),
+  await Hive.openBox('user');
+  runApp(
+    GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
       title: 'Wallet APP',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          iconTheme: IconThemeData(color: Colors.grey.shade600),
+        ),
       ),
-      home: const SplashFace(),
-    );
-  }
+    ),
+  );
 }

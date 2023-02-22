@@ -3,6 +3,7 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
 
 import 'package:my_wallet/model/signup_model.dart';
@@ -94,9 +95,9 @@ class SignupController extends GetxController {
   var emailValid = true.obs;
 // Validate Email
   Future<bool> emailValidate() async {
-    var data = await HomeDBHelper.instance.getData();
-    for (var i = 0; i < data.length; i++) {
-      if (data[i]['email'] == email) {
+    await DBHelper.instance.getSignupData();
+    for (var i = 0; i < signupData.length; i++) {
+      if (signupData[i].email == email) {
         Get.snackbar(
           'The Email is Already Present',
           'Please Enter a valid Email',
@@ -104,40 +105,36 @@ class SignupController extends GetxController {
           colorText: Colors.white,
         );
         emailValid.value = false;
-        nameController.text = '';
-        emailController.text = '';
-        passwordController.text = '';
-        nameComplete.value = '';
-        passwordComplete.value = '';
-        emailComplete.value = '';
-        loading.value = false;
+        clearField();
         break;
       }
     }
-
     return emailValid.value;
-    // insertData();
   }
 
   // Insert Data
   insertData() async {
-    HomeDBHelper.instance
-        .insertData(SignUp(
+    DBHelper.instance
+        .signupNewPerson(SignupModel(
       name: name,
       email: email,
       password: password,
     ))
         .then((value) {
       print('Successfully add Data of Signup');
-      nameController.text = '';
-      emailController.text = '';
-      passwordController.text = '';
-      nameComplete.value = '';
-      passwordComplete.value = '';
-      emailComplete.value = '';
-      loading.value = false;
+      clearField();
       Get.back();
     }).catchError((e) => print('Error In Add Data:$e'));
+  }
+
+  void clearField() {
+    nameController.text = '';
+    emailController.text = '';
+    passwordController.text = '';
+    nameComplete.value = '';
+    passwordComplete.value = '';
+    emailComplete.value = '';
+    loading.value = false;
   }
 
   // close function

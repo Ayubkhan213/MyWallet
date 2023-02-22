@@ -7,16 +7,17 @@ class ExpanceType {
     this.id,
     required this.expance_type,
   });
-  factory ExpanceType.fromMap(Map<String, dynamic> row) {
-    return ExpanceType(
-      id: row['id'],
-      expance_type: row['expance_type'],
-    );
-  }
-  Map<String, Object?> toMap() {
-    return {
-      'id': id,
-      'expance_type': expance_type,
-    };
-  }
 }
+
+// factory ExpanceType.fromMap(Map<String, dynamic> row) {
+//   return ExpanceType(
+//     id: row['id'],
+//     expance_type: row['expance_type'],
+//   );
+// }
+// Map<String, Object?> toMap() {
+//   return {
+//     'id': id,
+//     'expance_type': expance_type,
+//   };
+// }

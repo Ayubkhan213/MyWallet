@@ -3,6 +3,27 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
+//Text
+Widget text({
+  required String txt,
+  color,
+  size,
+  weight,
+  style,
+  align,
+}) {
+  return Text(
+    txt,
+    style: TextStyle(
+      color: color,
+      fontSize: size,
+      fontWeight: weight,
+      fontStyle: style,
+    ),
+    textAlign: align,
+  );
+}
+
 // Input Field
 Padding inputField({
   required String label,
@@ -12,6 +33,7 @@ Padding inputField({
   required bool isPassword,
   required Widget icon,
   keybordType,
+  tab,
 }) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 7.0),
@@ -23,6 +45,7 @@ Padding inputField({
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 5.0),
         child: TextFormField(
+          onTap: tab,
           controller: controller,
           decoration: InputDecoration(
             suffixIcon: icon,
@@ -84,6 +107,55 @@ Widget box({
             ),
           ),
         ],
+      ),
+    ),
+  );
+}
+
+Widget selectDateButton({
+  required BuildContext context,
+  selectDateType,
+  value,
+}) {
+  return Expanded(
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () {
+          showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1980),
+                  lastDate: DateTime(2030))
+              .then(value);
+        },
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: Colors.white,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  selectDateType,
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Expanded(
+                child: Icon(
+                  Icons.calendar_month_outlined,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     ),
   );

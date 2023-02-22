@@ -1,30 +1,24 @@
-// ignore_for_file: unused_import, avoid_print, unnecessary_null_comparison
+// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
-import 'package:my_wallet/controller/all_expance_transcation_controller.dart';
-import 'package:my_wallet/controller/home_controller.dart';
-import 'package:my_wallet/controller/update_expance_controller.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
-import 'package:my_wallet/faces/all_expances_transcation_face.dart';
+import 'package:my_wallet/modules/home/controller/home_controller.dart';
+import 'package:my_wallet/routes/app_pages.dart';
 
-import 'package:my_wallet/faces/expances_face.dart';
-import 'package:my_wallet/faces/update_expance_face.dart';
-
-class HomeFace extends StatelessWidget {
-  const HomeFace({super.key});
+class HomePage extends GetView<HomeController> {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    //MediaQuery
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
-    var controller = Get.find<HomeController>();
-    var updateController = Get.find<UpdateExpancesController>();
-    var allExpanceTranscation = Get.find<AllExpanceTranscation>();
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
@@ -32,8 +26,7 @@ class HomeFace extends StatelessWidget {
           child: Obx(
             () => Column(
               children: [
-                //First row for logout and add expancetype with padding//
-
+                // First row for logout
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
@@ -72,9 +65,10 @@ class HomeFace extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 12.0),
-                              child: Text(
-                                '${controller.month[int.parse(DateFormat('M').format(controller.formateDate)) - 1]},${DateTime.now().year}',
-                                style: const TextStyle(color: Colors.white),
+                              child: text(
+                                txt:
+                                    '${DateFormat('MMMM').format(DateTime.now())},${DateTime.now().year}',
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -83,17 +77,17 @@ class HomeFace extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 12.0),
-                              child: Text(
-                                'Rs ${controller.totalExpance.value.toString()} ',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: text(
+                                txt:
+                                    'Rs ${controller.totalExpance.value.toString()} ',
+                                color: Colors.white,
+                                size: 30.0,
+                                weight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
+                        //Row For updating data
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Row(
@@ -108,32 +102,29 @@ class HomeFace extends StatelessWidget {
                                   size: 18.0,
                                 ),
                               ),
-                              const Text(
-                                ' Update Expantion',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                              text(
+                                txt: ' Update Expantion',
+                                color: Colors.white,
                               ),
                             ],
                           ),
                         ),
+
                         Padding(
                           padding: const EdgeInsets.only(left: 5.0),
                           child: SizedBox(
                             height: 95.0,
-                            child: controller.expanceTypeValue.isEmpty
+                            child: expanceTypeValue.isEmpty
                                 ? const SizedBox()
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: controller
-                                            .expanceTypeValue.isEmpty
+                                    itemCount: expanceTypeValue.isEmpty
                                         ? 0
-                                        : controller.expanceTypeValue.length,
+                                        : expanceTypeValue.length,
                                     itemBuilder: (context, index) {
-                                      return controller
-                                                  .expanceTypeValue[index] ==
-                                              0
+                                      return expanceTypeValue[index] == 0
                                           ? const SizedBox()
+                                          //Box for storing icon expencetype name & prize
                                           : Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
@@ -161,32 +152,22 @@ class HomeFace extends StatelessWidget {
                                                       ),
                                                     ),
                                                     Expanded(
-                                                      child: Text(
-                                                        controller
-                                                                .expanceTypeData[
+                                                      child: text(
+                                                        txt: expanceTypeName[
                                                             index - 1],
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              77,
-                                                              148,
-                                                              195),
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
+                                                        color: const Color
+                                                                .fromARGB(
+                                                            255, 77, 148, 195),
+                                                        weight: FontWeight.bold,
                                                       ),
                                                     ),
                                                     Expanded(
-                                                      child: Text(
-                                                        'Rs. ${controller.expanceTypeValue[index].toString()}',
-                                                        style: const TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    77,
-                                                                    148,
-                                                                    195)),
-                                                      ),
+                                                      child: text(
+                                                          txt:
+                                                              'Rs. ${expanceTypeValue[index].toString()}',
+                                                          color: const Color
+                                                                  .fromARGB(255,
+                                                              77, 148, 195)),
                                                     ),
                                                   ],
                                                 ),
@@ -199,8 +180,8 @@ class HomeFace extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10.0,
+                SizedBox(
+                  height: height * 0.02,
                 ),
                 /* third row for heading expance record and show 
                view all record on another page*/
@@ -211,28 +192,20 @@ class HomeFace extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Expance Record',
-                        style: TextStyle(
-                          color: Color(0xFF2980b9),
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      text(
+                        txt: 'Expance Record',
+                        color: const Color(0xFF2980b9),
+                        size: 28.0,
+                        weight: FontWeight.bold,
                       ),
                       GestureDetector(
                         onTap: () {
-                          allExpanceTranscation.categoriesExpance.value = 0;
-                          allExpanceTranscation.record.value = 'All record';
-                          allExpanceTranscation.expanceData.clear();
-                          allExpanceTranscation.getExpanceData();
-                          Get.to(const AllExpanceTranscationFace());
+                          Get.toNamed(Routes.ALL_EXPENCES);
                         },
-                        child: const Text(
-                          'View all',
-                          style: TextStyle(
-                            color: Color(0xFF2980b9),
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: text(
+                          txt: 'View all',
+                          color: const Color(0xFF2980b9),
+                          weight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -242,65 +215,61 @@ class HomeFace extends StatelessWidget {
                   height: 10.0,
                 ),
                 /* 
-                List view bulider with multiple listtile for showing 
-                one expance type name title date and prize by one listtile
+                List view bulider with multiple list tile for showing 
+                one expance type name title date and prize by one list tile
                 */
                 SizedBox(
                   height: height * 0.55,
                   child: ListView.builder(
-                      itemCount: controller.expanceData.length < 10
-                          ? controller.expanceData.length
-                          : 10,
+                      itemCount: monthlyExpanceData.isEmpty
+                          ? 1
+                          : monthlyExpanceData.length < 10 &&
+                                  monthlyExpanceData.isNotEmpty
+                              ? monthlyExpanceData.length
+                              : 10,
                       itemBuilder: (context, index) {
-                        return controller.expanceData.isEmpty
+                        return monthlyExpanceData.isEmpty
                             ? const Center(
-                                child: Text(
-                                  'No Data Found',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 30.0),
+                                child: Image(
+                                  image:
+                                      AssetImage('assets/images/empty_box.jpg'),
+                                  fit: BoxFit.cover,
                                 ),
                               )
                             : Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 15.0, vertical: 5.0),
                                 child: Slidable(
+                                  //start slidable action for update data
                                   startActionPane: ActionPane(
                                     motion: const ScrollMotion(),
                                     children: [
                                       SlidableAction(
                                         onPressed: ((context) async {
-                                          updateController.initateData['id'] =
-                                              controller.expanceData[index]
-                                                  ['id'];
-                                          updateController
-                                                  .initateData['title'] =
-                                              controller.expanceData[index]
-                                                  ['title'];
-                                          updateController
-                                                  .initateData['expance_type'] =
-                                              controller.expanceData[index]
-                                                  ['expance_type'];
-                                          updateController
-                                                  .initateData['expance'] =
-                                              controller.expanceData[index]
-                                                  ['expance'];
-                                          updateController.initateData['date'] =
-                                              controller.expanceData[index]
-                                                  ['date'];
-                                          updateController
-                                                  .initateData['source'] =
-                                              controller.expanceData[index]
-                                                  ['source'];
-                                          await updateController
-                                              .initializeValue();
-                                          await Get.to(
-                                              const UpdateExpancesFace(),
+                                          await Get.toNamed(
+                                              Routes.UPDATE_EXPENCES,
                                               arguments: {
-                                                'expance_type': controller
-                                                    .expanceTypeData[controller
-                                                            .expanceData[index]
-                                                        ['expance_type'] -
-                                                    1],
+                                                'id': monthlyExpanceData[index]
+                                                    .id,
+                                                'title':
+                                                    monthlyExpanceData[index]
+                                                        .title,
+                                                'expance_type': expanceTypeName[
+                                                    monthlyExpanceData[index]
+                                                            .expance_type! -
+                                                        1],
+                                                'expance_type_id':
+                                                    monthlyExpanceData[index]
+                                                        .expance_type,
+                                                'expance':
+                                                    monthlyExpanceData[index]
+                                                        .expance,
+                                                'date':
+                                                    monthlyExpanceData[index]
+                                                        .date,
+                                                'source':
+                                                    monthlyExpanceData[index]
+                                                        .source,
                                               });
                                         }),
                                         backgroundColor: Colors.lightBlue,
@@ -311,15 +280,16 @@ class HomeFace extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  //End slidable action for delete data
                                   endActionPane: ActionPane(
                                     motion: const ScrollMotion(),
                                     children: [
                                       SlidableAction(
                                         onPressed: ((context) async {
-                                          HomeDBHelper.instance
+                                          DBHelper.instance
                                               .deleteRowOfTable(
-                                                  id: controller
-                                                      .expanceData[index]['id'])
+                                                  id: monthlyExpanceData[index]
+                                                      .id!)
                                               .then((val) => print(
                                                   'Successfully Delete Data'))
                                               .catchError((e) => print(
@@ -334,6 +304,7 @@ class HomeFace extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+
                                   child: Container(
                                     decoration: BoxDecoration(
                                         color: Colors.white,
@@ -343,25 +314,30 @@ class HomeFace extends StatelessWidget {
                                       leading: CircleAvatar(
                                         child: Image(
                                             image: AssetImage(
-                                                'assets/images/${controller.expanceData[index]['expance_type']}.png')),
+                                                'assets/images/${monthlyExpanceData[index].expance_type}.png')),
                                       ),
-                                      title: Text(controller.expanceTypeData[
-                                          controller.expanceData[index]
-                                                  ['expance_type'] -
-                                              1]),
-                                      subtitle: Text(controller
-                                          .expanceData[index]['title']),
+                                      title: text(
+                                          txt: expanceTypeName[
+                                              monthlyExpanceData[index]
+                                                      .expance_type! -
+                                                  1]),
+                                      subtitle: text(
+                                          txt:
+                                              monthlyExpanceData[index].title!),
                                       trailing: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                              'Rs ${controller.expanceData[index]['expance']}'),
+                                          text(
+                                              txt:
+                                                  'Rs ${monthlyExpanceData[index].expance}'),
                                           const SizedBox(
                                             height: 5.0,
                                           ),
-                                          Text(
-                                              ' ${controller.expanceData[index]['date'].toString().substring(0, 2)} ${controller.month[int.parse(DateFormat('M').format(controller.formateDate)) - 1].toString().substring(0, 3)}, ${DateTime.now().year}'),
+                                          text(
+                                            txt:
+                                                '${dateFormating(givenDate: monthlyExpanceData[index].date) as String},${DateTime.now().year}',
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -378,7 +354,7 @@ class HomeFace extends StatelessWidget {
       //Last floation action button for to add new expance //
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(const ExpancesFace());
+          Get.toNamed(Routes.ADD_EXPANCES);
         },
         child: const Icon(Icons.add),
       ),

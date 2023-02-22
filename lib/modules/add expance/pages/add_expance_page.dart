@@ -3,59 +3,59 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/common/reuse_widget_auth.dart';
-import 'package:my_wallet/controller/expances_controller.dart';
+import 'package:my_wallet/modules/add%20expance/controller/add_expance_controller.dart';
 
-class ExpancesFace extends StatelessWidget {
-  const ExpancesFace({super.key});
+class AddExpancePage extends GetView<AddExpanceController> {
+  const AddExpancePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    //MediaQuery
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
-    var controller = Get.find<ExpancesController>();
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      //Appbar
+      appBar: AppBar(),
       body: SafeArea(
         child: ListView(
           children: [
+            //SizedBoxed
             SizedBox(
-              height: height / 20,
+              height: height * 0.04,
             ),
             Column(
               children: [
-                Row(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 18.0),
-                      child: Text(
-                        'Expances',
-                        style: TextStyle(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2980b9),
-                        ),
-                      ),
+                //Expance Text with Padding
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: text(
+                      txt: 'Expances',
+                      color: const Color(0xFF2980b9),
+                      weight: FontWeight.bold,
+                      size: 35.0,
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 50.0,
+
+                //SizedBoxed
+                SizedBox(
+                  height: height * 0.06,
                 ),
 
                 //========= FORM ============//
                 Form(
                   key: controller.key,
-                  child: Column(
-                    children: [
-                      //========= Title Field ==========//
-                      Obx(
-                        () => inputField(
+                  child: Obx(
+                    () => Column(
+                      children: [
+                        //========= Title Field ==========//
+                        inputField(
                           isPassword: false,
                           icon: controller.titleComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
@@ -80,12 +80,10 @@ class ExpancesFace extends StatelessWidget {
                             return controller.titleValidation(value);
                           },
                         ),
-                      ),
+                        //============= END ============//
 
-                      //============= END ============//
-                      //========= ExpanceType Field ==========//
-                      Obx(
-                        () => Padding(
+                        //========= ExpanceType Field ==========//
+                        Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 15.0, vertical: 5.0),
                           child: Container(
@@ -131,18 +129,14 @@ class ExpancesFace extends StatelessWidget {
                                       .expanceTypeValidation(value.toString());
                                 },
                                 items: <dynamic>[
-                                  ...List.generate(
-                                      controller.expanceTypeData.length,
-                                      (index) =>
-                                          controller.expanceTypeData[index])
+                                  ...List.generate(expanceTypeData.length,
+                                      (index) => expanceTypeData[index])
                                 ].map<DropdownMenuItem<dynamic>>((value) {
                                   return DropdownMenuItem<dynamic>(
-                                    value: value['id'],
-                                    child: Text(
-                                      value['expance_type'],
-                                      style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                      ),
+                                    value: value.id,
+                                    child: text(
+                                      txt: value.expance_type,
+                                      color: Colors.grey.shade600,
                                     ),
                                   );
                                 }).toList(),
@@ -153,12 +147,10 @@ class ExpancesFace extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
+                        //============= END ============//
 
-                      //============= END ============//
-                      //========= Expance Field ==========//
-                      Obx(
-                        () => inputField(
+                        //========= Expance Field ==========//
+                        inputField(
                           icon: controller.expanceComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
                               : controller.expanceComplete.value == 'false'
@@ -176,58 +168,42 @@ class ExpancesFace extends StatelessWidget {
                           controller: controller.expanceController,
                           keybordType: TextInputType.number,
                           save: (value) {
-                            controller.expance = value;
+                            var data = int.parse(value);
+                            controller.expance = data;
                           },
                           validate: (value) {
                             return controller.expanceValidation(value);
                           },
                           isPassword: false,
                         ),
-                      ),
+                        //============= END ============//
 
-                      //============= END ============//
-                      //========= Date Field ==========//
-                      Obx(
-                        () => inputField(
+                        //========= Date Field ==========//
+                        inputField(
+                          tab: () {
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(1980),
+                                    lastDate: DateTime(2030))
+                                .then((value) {
+                              var date =
+                                  DateFormat('dd-MM-yyyy').format(value!);
+                              controller.dateController.text = date;
+                              var modifyDateString =
+                                  DateFormat('dd-MM-yyyy').parse(date);
+                              var modifyDate = DateFormat('ddMMyyyy')
+                                  .format(modifyDateString);
+                              var integerDate = int.parse(modifyDate);
+                              controller.filterDate.value = integerDate;
+                            }).catchError(
+                                    (e) => print('Error in date picker:$e'));
+                          },
                           isPassword: false,
-                          icon: controller.dateComplete.value == 'true'
-                              ? Icon(Icons.check, color: Colors.green.shade800)
-                              : controller.dateComplete.value == 'false'
-                                  ? IconButton(
-                                      onPressed: () {
-                                        controller.dateController.text = '';
-                                        controller.dateComplete.value = '';
-                                      },
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: Colors.red.shade800,
-                                      ))
-                                  : IconButton(
-                                      onPressed: () {
-                                        showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(1980),
-                                                lastDate: DateTime(2030))
-                                            .then((value) {
-                                          var date = DateFormat('dd-MM-yyyy')
-                                              .format(value!);
-                                          controller.dateController.text = date;
-                                          var modifyDate = date
-                                                  .toString()
-                                                  .substring(0, 2) +
-                                              date.toString().substring(3, 5) +
-                                              date.toString().substring(6);
-                                          var integerDate =
-                                              int.parse(modifyDate);
-                                          controller.filterDate.value =
-                                              integerDate;
-                                        }).catchError((e) => print(
-                                                'Error in date picker:$e'));
-                                      },
-                                      icon: const Icon(Icons.calendar_month),
-                                      color: Colors.grey.shade600,
-                                    ),
+                          icon: Icon(
+                            Icons.calendar_month,
+                            color: Colors.grey.shade600,
+                          ),
                           label: 'Date',
                           controller: controller.dateController,
                           keybordType: TextInputType.text,
@@ -238,12 +214,10 @@ class ExpancesFace extends StatelessWidget {
                             return controller.dateValidation(value);
                           },
                         ),
-                      ),
+                        //============= END ============//
 
-                      //============= END ============//
-                      //========= Source Field ==========//
-                      Obx(
-                        () => inputField(
+                        //========= Source Field ==========//
+                        inputField(
                           isPassword: false,
                           icon: controller.sourceComplete.value == 'true'
                               ? Icon(Icons.check, color: Colors.green.shade800)
@@ -268,15 +242,15 @@ class ExpancesFace extends StatelessWidget {
                             return controller.sourceValidation(value);
                           },
                         ),
-                      ),
+                        //============= END ============//
 
-                      //============= END ============//
+                        //SizedBoxed
+                        SizedBox(
+                          height: height * 0.02,
+                        ),
 
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      Obx(
-                        () => GestureDetector(
+                        //Add Expance Button
+                        GestureDetector(
                           onTap: () async {
                             controller.checkValidation();
                           },
@@ -292,24 +266,24 @@ class ExpancesFace extends StatelessWidget {
                               child: controller.loading.value
                                   ? const Center(
                                       child: CircularProgressIndicator())
-                                  : const Text(
-                                      'Add Expances',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                  : text(
+                                      txt: 'Add Expances',
+                                      color: Colors.white,
+                                      align: TextAlign.center,
+                                      weight: FontWeight.bold,
                                     ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
+            //Sizedboxed
             SizedBox(
-              height: height / 10,
+              height: height * 0.02,
             ),
           ],
         ),

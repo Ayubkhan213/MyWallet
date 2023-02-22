@@ -3,14 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_wallet/controller/home_controller.dart';
+import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/db/db_helper_home.dart';
-import 'package:my_wallet/faces/home_face.dart';
+import 'package:my_wallet/routes/app_pages.dart';
 
 class LoginController extends GetxController {
-//  home controller
-  // var home = Get.find<HomeController>();
-
   // Refrence box
   final _mybox = Hive.box('user');
 
@@ -81,8 +78,8 @@ class LoginController extends GetxController {
     bool checkValidation = await emailValidate();
     if (emailValid.value) {
       await putUserData();
-      await getExpanceData();
-      Get.offAll(const HomeFace());
+      // await getExpanceData();
+      Get.offAllNamed(Routes.HOME);
     } else {
       Get.snackbar(
         'You Enter Wrong Email or Password',
@@ -101,9 +98,9 @@ class LoginController extends GetxController {
   var emailValid = false.obs;
 // Validate Email
   Future<bool> emailValidate() async {
-    var data = await HomeDBHelper.instance.getData();
-    for (var i = 0; i < data.length; i++) {
-      if (data[i]['email'] == email && data[i]['password'] == password) {
+    var data = await DBHelper.instance.getSignupData();
+    for (var i = 0; i < signupData.length; i++) {
+      if (signupData[i].email == email && signupData[i].password == password) {
         emailValid.value = true;
         break;
       }
@@ -112,7 +109,7 @@ class LoginController extends GetxController {
   }
 
   putUserData() async {
-    var data = await HomeDBHelper.instance.getUserId(email);
+    var data = await DBHelper.instance.getUserData(email);
     _mybox.put('id', data[0]['id']);
     _mybox.put('name', data[0]['name']);
     _mybox.put('email', data[0]['email']);
@@ -140,15 +137,13 @@ class LoginController extends GetxController {
   }
 
   // Function for getExpanceData
-  getExpanceData() async {
-    var home = Get.find<HomeController>();
-    List<Map<String, Object?>> data =
-        await HomeDBHelper.instance.getExpanceData(_mybox.get('id'));
-    for (var i = 0; i < data.length; i++) {
-      home.totalExpance.value += data[i]['expance'] as int;
-      print(home.totalExpance);
-    }
-  }
+  // getExpanceData() async {
+  //   await HomeDBHelper.instance.getExpanceData(_mybox.get('id'));
+  //   for (var i = 0; i < expanceData.length; i++) {
+  //     totalExpance.value += expanceData[i].expance!;
+  //     print(home.totalExpance);
+  //   }
+  // }
 
   // close  function
   @override
