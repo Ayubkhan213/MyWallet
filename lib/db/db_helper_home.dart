@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field, prefer_const_declarations, invalid_return_type_for_catch_error, body_might_complete_normally_nullable, depend_on_referenced_packages, no_leading_underscores_for_local_identifiers, avoid_print
 
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:my_wallet/common/reusable_list.dart';
 import 'package:my_wallet/model/expance_model.dart';
 
@@ -113,6 +114,7 @@ class DBHelper {
     var result = await _db!.rawQuery(
         'SELECT * FROM $_expanceTable WHERE user_id =$userId AND expance_type = $expanceTypeId');
     var data = result.map((e) => ExpanceModel.fromMap(e)).toList();
+
     totalExpancesData.value = data;
   }
 

@@ -46,6 +46,7 @@ class AllExpancesController extends GetxController {
   Future<void> getSelectedCategoriesTotalExpance({required int? id}) async {
     totalExpancesData.clear();
     categoriesExpance.value = 0;
+    record.value = expanceTypeName[id! - 1];
     await DBHelper.instance.getSelectedCategoriesTotalExpance(
         userId: _myBox.get('id'), expanceTypeId: id);
     for (var i = 0; i < totalExpancesData.length; i++) {
@@ -64,6 +65,7 @@ class AllExpancesController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+
     await getTotalExpanceValue();
   }
 }

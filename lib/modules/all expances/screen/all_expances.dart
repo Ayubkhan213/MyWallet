@@ -158,7 +158,8 @@ class AllExpancesPage extends GetView<AllExpancesController> {
                                                         onTap: () async {
                                                           await controller
                                                               .getSelectedCategoriesTotalExpance(
-                                                                  id: index);
+                                                                  id: index +
+                                                                      1);
                                                           controller.record
                                                                   .value =
                                                               expanceTypeName[
@@ -339,43 +340,51 @@ class AllExpancesPage extends GetView<AllExpancesController> {
               Expanded(
                 child: ListView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: totalExpancesData.length,
+                    itemCount: totalExpancesData.isEmpty
+                        ? 1
+                        : totalExpancesData.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 5.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0)),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              child: Image(
-                                  image: AssetImage(
-                                      'assets/images/${totalExpancesData[index].expance_type}.png')),
-                            ),
-                            title: text(
-                                txt: expanceTypeName[
-                                    totalExpancesData[index].expance_type!]),
-                            subtitle:
-                                text(txt: totalExpancesData[index].title!),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                text(
-                                    txt:
-                                        'Rs ${totalExpancesData[index].expance}'),
-                                const SizedBox(
-                                  height: 5.0,
+                      return totalExpancesData.isEmpty
+                          ? Center(
+                              child: text(txt: 'No data Found'),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 5.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    child: Image(
+                                        image: AssetImage(
+                                            'assets/images/${totalExpancesData[index].expance_type}.png')),
+                                  ),
+                                  title: text(
+                                      txt: expanceTypeName[
+                                          totalExpancesData[index]
+                                                  .expance_type! -
+                                              1]),
+                                  subtitle: text(
+                                      txt: totalExpancesData[index].title!),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      text(
+                                          txt:
+                                              'Rs ${totalExpancesData[index].expance}'),
+                                      const SizedBox(
+                                        height: 5.0,
+                                      ),
+                                      text(
+                                          txt:
+                                              '${dateFormating(givenDate: totalExpancesData[index].date) as String},${DateTime.now().year}'),
+                                    ],
+                                  ),
                                 ),
-                                text(
-                                    txt:
-                                        '${dateFormating(givenDate: totalExpancesData[index].date) as String},${DateTime.now().year}'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
+                              ),
+                            );
                     }),
               ),
             ],
